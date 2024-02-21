@@ -31,9 +31,13 @@ public sealed class PlayerController : Component
     // // Member Variables
     [Sync] public bool IsCrouching {get;set;} = false;
     public bool IsWalking = false;
-    private CharacterController characterController;
+    [Sync] public bool IsOnGround {get;set;} = false;
+    // public GameObject GroundObject {get;set;}
+    // public Collider GroundCollider {get;set;}
+
+    // private CharacterController characterController;
     private CitizenAnimationHelper animationHelper;
-    
+
     public float Stamina = 80f;
     [Sync] private float InternalMoveSpeed {get;set;} = 250f;
     private bool AlreadyGrounded = true;
@@ -41,7 +45,17 @@ public sealed class PlayerController : Component
     private float jumpStartHeight = 0f;
     private float jumpMaxHeight = 0f;
 
+    // Size controls
+    private float Radius = 16f;
+    private float Height = 72f;
+
+    // Char controller ported vars
+    public BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
+    private int _stuckTries;
+    [Property] public TagSet IgnoreLayers { get; set; } = new TagSet();
+
     [Sync] private Vector3 WishDir {get;set;} = Vector3.Zero;
+    [Sync] public Vector3 Velocity {get;set;} = Vector3.Zero;
     
 	private CameraComponent Camera;
 	private ModelRenderer BodyRenderer;
@@ -52,7 +66,7 @@ public sealed class PlayerController : Component
 
         BodyRenderer = Body.Components.Get<ModelRenderer>();
         animationHelper = Components.GetInChildrenOrSelf<CitizenAnimationHelper>();
-        characterController = Components.Get<CharacterController>();
+        // characterController = Components.Get<CharacterController>();
 
 		if ( IsProxy )
 			return;
@@ -61,10 +75,10 @@ public sealed class PlayerController : Component
         // UI.Components.Create<ScreenPanel>();
         // UI.Components.Create<TestUI>();
 
-        characterController.Radius = 16;
-        characterController.Height = 72;
-        characterController.Bounciness = 0;
-        characterController.Acceleration = 0;
+        // characterController.Radius = 16;
+        // characterController.Height = 72;
+        // characterController.Bounciness = 0;
+        // characterController.Acceleration = 0;
         
 		Camera = Scene.Camera.Components.Get<CameraComponent>();
         
@@ -78,16 +92,125 @@ public sealed class PlayerController : Component
         return Stamina / MaxStamina;
     }
 
-    // bool IsOnSlope() {
-    //     // float angle = characterController.GroundCollider.Transform.Rotation.Angles().AsVector3().z;
-    //     // if (angle < characterController.GroundAngle && angle != angle) {
-    //     //     return true;
-    //     // }
-    //     if (characterController.GroundCollider == null) return false;
-    //     // float angle = Vector3.GetAngle(Vector3.Up, characterController.GroundCollider.Transform.Rotation.Angles().AsVector3());
-    //     // Log.Info(angle);
-    //     return false;
-    // }
+    public void Punch(in Vector3 amount) {
+        ClearGround();
+        Velocity += amount;
+    }
+
+    private void ClearGround() {
+        IsOnGround = false;
+        // GroundObject = null;
+        // GroundCollider = null;
+    }
+
+    private void Move(bool step) {
+        if (step && IsOnGround)
+        {
+            Velocity = Velocity.WithZ(0f);
+        }
+
+        if (Velocity.Length < 0.001f)
+        {
+            Velocity = Vector3.Zero;
+            return;
+        }
+
+        Vector3 position = base.GameObject.Transform.Position;
+        CharacterControllerHelper characterControllerHelper = new CharacterControllerHelper(BuildTrace(position, position), position, Velocity);
+        characterControllerHelper.MaxStandableAngle = 45.5f;
+        if (step && IsOnGround)
+        {
+            characterControllerHelper.TryMoveWithStep(Time.Delta, 18);
+        }
+        else
+        {
+            characterControllerHelper.TryMove(Time.Delta);
+        }
+
+        base.Transform.Position = characterControllerHelper.Position;
+        Velocity = characterControllerHelper.Velocity;
+    }
+    
+    public void Move()
+    {
+        if (!TryUnstuck())
+        {
+            if (IsOnGround)
+            {
+                Move(step: true);
+            }
+            else
+            {
+                Move(step: false);
+            }
+
+            CategorizePosition();
+        }
+    }
+
+    private bool TryUnstuck() {
+        if (!BuildTrace(base.Transform.Position, base.Transform.Position).Run().StartedSolid)
+        {
+            _stuckTries = 0;
+            return false;
+        }
+
+        int num = 20;
+        for (int i = 0; i < num; i++)
+        {
+            Vector3 vector = base.Transform.Position + Vector3.Random.Normal * ((float)_stuckTries / 2f);
+            if (i == 0)
+            {
+                vector = base.Transform.Position + Vector3.Up * 2f;
+            }
+
+            if (!BuildTrace(vector, vector).Run().StartedSolid)
+            {
+                base.Transform.Position = vector;
+                return false;
+            }
+        }
+
+        _stuckTries++;
+        return true;
+    }
+
+    private void CategorizePosition() {
+        Vector3 position = base.Transform.Position;
+        Vector3 to = position + Vector3.Down * 2f;
+        Vector3 from = position;
+        bool isOnGround = IsOnGround;
+        if (!IsOnGround && Velocity.z > 40f)
+        {
+            ClearGround();
+            return;
+        }
+
+        to.z -= (isOnGround ? 18 : 0.1f);
+        SceneTraceResult sceneTraceResult = BuildTrace(from, to).Run();
+        if (!sceneTraceResult.Hit || Vector3.GetAngle(in Vector3.Up, in sceneTraceResult.Normal) > 45.5)
+        {
+            ClearGround();
+            return;
+        }
+
+        IsOnGround = true;
+        // GroundObject = sceneTraceResult.GameObject;
+        // GroundCollider = sceneTraceResult.Shape?.Collider as Collider;
+        if (isOnGround && !sceneTraceResult.StartedSolid && sceneTraceResult.Fraction > 0f && sceneTraceResult.Fraction < 1f)
+        {
+            base.Transform.Position = sceneTraceResult.EndPosition + sceneTraceResult.Normal * 0.01f;
+        }
+    }
+
+    private SceneTrace BuildTrace(Vector3 from, Vector3 to) {
+        return BuildTrace(base.Scene.Trace.Ray(in from, in to));
+    }
+
+    private SceneTrace BuildTrace(SceneTrace source) {
+        BBox hull = BoundingBox;
+        return source.Size(in hull).WithoutTags(IgnoreLayers).IgnoreGameObjectHierarchy(base.GameObject);
+    }
 
     void GatherInput() {
         WishDir = 0;
@@ -110,7 +233,7 @@ public sealed class PlayerController : Component
     void ApplyFriction() {
         float speed, newspeed, control, drop;
 
-        speed = characterController.Velocity.Length;
+        speed = Velocity.Length;
 
         // If too slow, return
         if (speed < 0.1f) return;
@@ -118,7 +241,7 @@ public sealed class PlayerController : Component
         drop = 0;
 
         // Apply ground friction
-        if (characterController.IsOnGround)
+        if (IsOnGround)
         {
             // Bleed off some speed, but if we have less than the bleed
             // threshold, bleed the threshold amount.
@@ -140,15 +263,15 @@ public sealed class PlayerController : Component
             // Determine proportion of old speed we are using.
             newspeed /= speed;
             // Adjust velocity according to proportion.
-            characterController.Velocity *= newspeed;
+            Velocity *= newspeed;
         }
 
-        characterController.Velocity -= (1 - newspeed) * characterController.Velocity;
+        Velocity -= (1 - newspeed) * Velocity;
     }
 
     void Accelerate(Vector3 wishdir, float wishspeed, float accel) {
         // See if we are changing direction a bit
-        float currentspeed = Vector3.Dot(characterController.Velocity, wishdir);
+        float currentspeed = Vector3.Dot(Velocity, wishdir);
 
         // Reduce wishspeed by the amount of veer.
         float addspeed = wishspeed - currentspeed;
@@ -160,7 +283,7 @@ public sealed class PlayerController : Component
 
         if (accelspeed > addspeed) accelspeed = addspeed;
         
-        characterController.Velocity += wishdir.WithZ(0) * accelspeed;
+        Velocity += wishdir.WithZ(0) * accelspeed;
     }
 
     void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
@@ -171,7 +294,7 @@ public sealed class PlayerController : Component
             wishSpeed = MaxAirWishSpeed;
         }
 
-        currentspeed = characterController.Velocity.Dot(wishDir);
+        currentspeed = Velocity.Dot(wishDir);
         addspeed = wishSpeed - currentspeed;
 
         if (addspeed <= 0) {
@@ -184,25 +307,22 @@ public sealed class PlayerController : Component
             accelspeed = addspeed;
         }
 
-        characterController.Velocity += wishDir * addspeed;
+        Velocity += wishDir * addspeed;
     }
 
     void GroundMove() {
         float wishSpeed = WishDir.Length * InternalMoveSpeed * 1.8135f; // this is shit, why mult???
         Accelerate(WishDir, wishSpeed, Acceleration);
-        if (characterController.Velocity.z < 0) {
-            characterController.Velocity = characterController.Velocity.WithZ(0);
+        if (Velocity.z < 0) {
+            Velocity = Velocity.WithZ(0);
         }
 
         if ((HoldToJump && Input.Down("Jump")) || Input.Pressed("Jump")) {
-            characterController.Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
+            Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
             Stamina -= Stamina * StaminaJumpCost * 2.9625f;
             Stamina = (Stamina * 10).FloorToInt() * 0.1f;
             if (Stamina < 0) Stamina = 0;
         }
-        // else {
-        //     characterController.Velocity = characterController.Velocity.WithZ(0);
-        // }
     }
 
     void AirMove() {
@@ -213,9 +333,9 @@ public sealed class PlayerController : Component
         if (animationHelper == null) return;
 
         animationHelper.WithWishVelocity(WishDir * InternalMoveSpeed);
-        animationHelper.WithVelocity(characterController.Velocity);
+        animationHelper.WithVelocity(Velocity);
         animationHelper.AimAngle = Head.Transform.Rotation;
-        animationHelper.IsGrounded = characterController.IsOnGround;
+        animationHelper.IsGrounded = IsOnGround;
         animationHelper.WithLook(Head.Transform.Rotation.Forward, 1f, 0.75f, 0.5f);
         animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
         animationHelper.DuckLevel = IsCrouching ? 1f : 0f;
@@ -236,15 +356,15 @@ public sealed class PlayerController : Component
         var HeightGoal = 72;
         if (IsCrouching) HeightGoal = 54;
         CrouchTime = 0.125f; // TODO: FIX 3RD PERSON CROUCHING
-        characterController.Height = characterController.Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
-        Head.Transform.LocalPosition = new Vector3(0, 0, characterController.Height * 0.89f);
+        Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
+        Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
 
-        characterController.Velocity += Gravity * Time.Delta * 0.5f;
+        Velocity += Gravity * Time.Delta * 0.5f;
         
-        if(characterController.IsOnGround) ApplyFriction();
+        if(IsOnGround) ApplyFriction();
 
-        if (AlreadyGrounded != characterController.IsOnGround) {
-            if (characterController.IsOnGround) {
+        if (AlreadyGrounded != IsOnGround) {
+            if (IsOnGround) {
                 var heightMult = (jumpMaxHeight - jumpStartHeight) / 46f;
                 Stamina -= Stamina * StaminaLandingCost * 2.9625f * heightMult;
                 Stamina = (Stamina * 10).FloorToInt() * 0.1f;
@@ -253,16 +373,16 @@ public sealed class PlayerController : Component
                 jumpStartHeight = GameObject.Transform.Position.z;
                 jumpMaxHeight = GameObject.Transform.Position.z;
             }
-            AlreadyGrounded = characterController.IsOnGround;
+            AlreadyGrounded = IsOnGround;
         }
 
-        if(characterController.IsOnGround) {
+        if(IsOnGround) {
             GroundMove();
             // IsOnSlope();
-            Camera.Components.Get<TestUI>().Speed = characterController.Velocity.Length.CeilToInt();
+            Camera.Components.Get<TestUI>().Speed = Velocity.Length.CeilToInt();
         } else {
             AirMove();
-            Camera.Components.Get<TestUI>().Speed = characterController.Velocity.WithZ(0).Length.CeilToInt();
+            Camera.Components.Get<TestUI>().Speed = Velocity.WithZ(0).Length.CeilToInt();
         }
 
         CrouchTime -= Time.Delta * 0.33f;
@@ -271,13 +391,15 @@ public sealed class PlayerController : Component
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
 
-        var fovGoal = 90f + (30 * ((characterController.Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
+        var fovGoal = 90f + (30 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
         Camera.FieldOfView = Camera.FieldOfView.LerpTo(fovGoal, Time.Delta / 0.25f);
         
-        // Log.Info(characterController.Velocity);
-        characterController.Move();
+        // Log.Info(Velocity);
+        if (Velocity.Length != 0) {
+            Move();
+        }
 
-        characterController.Velocity += Gravity * Time.Delta * 0.5f;
+        Velocity += Gravity * Time.Delta * 0.5f;
 
         if (jumpMaxHeight < GameObject.Transform.Position.z) jumpMaxHeight = GameObject.Transform.Position.z;
     }

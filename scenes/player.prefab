@@ -1,20 +1,10 @@
 {
   "RootObject": {
-    "Id": "74cdb069-dbc5-4067-aa65-f295df2e0f38",
+    "Id": "953cd65e-8424-4288-84f4-2c156c60bcbe",
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
     "Components": [
-      {
-        "__type": "CharacterController",
-        "Acceleration": 0,
-        "Bounciness": 0,
-        "GroundAngle": 45.5,
-        "Height": 72,
-        "IgnoreLayers": "player",
-        "Radius": 16,
-        "StepHeight": 18
-      },
       {
         "__type": "PlayerController",
         "Sensitivity": 2,
@@ -22,16 +12,17 @@
         "AirAcceleration": 150,
         "Body": {
           "_type": "gameobject",
-          "go": "07d99c4a-bd6e-43f2-ac53-326dd58d917d"
+          "go": "0fd98580-9962-4432-b869-f084f444993b"
         },
         "CrouchSpeed": 85,
         "Friction": 5.2,
         "Gravity": "0,0,-800",
         "Head": {
           "_type": "gameobject",
-          "go": "2f7ecd8d-a89c-4803-94ad-5c2c9d89a743"
+          "go": "d2341574-8b38-480a-8e6a-600cb9bd9f49"
         },
         "HoldToJump": true,
+        "IgnoreLayers": "",
         "JumpForce": 301.99338,
         "MaxAirWishSpeed": 30,
         "MaxStamina": 80,
@@ -46,13 +37,13 @@
     ],
     "Children": [
       {
-        "Id": "2f7ecd8d-a89c-4803-94ad-5c2c9d89a743",
+        "Id": "d2341574-8b38-480a-8e6a-600cb9bd9f49",
         "Name": "Head",
         "Position": "0,0,64",
         "Enabled": true
       },
       {
-        "Id": "07d99c4a-bd6e-43f2-ac53-326dd58d917d",
+        "Id": "0fd98580-9962-4432-b869-f084f444993b",
         "Name": "Body",
         "Enabled": true,
         "Components": [
@@ -83,7 +74,7 @@
             "LookAtEnabled": false,
             "Target": {
               "_type": "component",
-              "go": "07d99c4a-bd6e-43f2-ac53-326dd58d917d",
+              "go": "0fd98580-9962-4432-b869-f084f444993b",
               "component_type": "SkinnedModelRenderer"
             }
           }
