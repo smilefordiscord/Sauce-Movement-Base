@@ -16,71 +16,49 @@ public sealed class PlayerController : Component
     [Property] public float JumpForce {get;set;} = 301.993378f;
     [Property] private bool HoldToJump {get;set;} = false;
     [Property] public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
+    
+    // Stamina Properties
     [Property] public float MaxStamina {get;set;} = 80f;
     [Property] public float StaminaRecoveryRate {get;set;} = 60f;
     [Property] public float StaminaJumpCost {get;set;} =  0.08f;
     [Property] public float StaminaLandingCost {get;set;} =  0.05f;
 
-    // Object References
+    // Other Properties
+    [Property] public TagSet IgnoreLayers { get; set; } = new TagSet();
     [Property] public GameObject Head {get;set;}
     [Property] public GameObject Body {get;set;}
-    public GameObject UI;
 
-    // // Member Variables
+    // State Bools
     [Sync] public bool IsCrouching {get;set;} = false;
     public bool IsWalking = false;
     [Sync] public bool IsOnGround {get;set;} = false;
-    // public GameObject GroundObject {get;set;}
-    // public Collider GroundCollider {get;set;}
 
-    // private CharacterController characterController;
+    // Internal objects
+    private GameObject UI;
     private CitizenAnimationHelper animationHelper;
-
-    public float Stamina = 80f;
-    [Sync] private float InternalMoveSpeed {get;set;} = 250f;
-    private bool AlreadyGrounded = true;
-    private float CrouchTime = 0.1f;
-    private float jumpStartHeight = 0f;
-    private float jumpMaxHeight = 0f;
-
-    // Size controls
-    private float Radius = 16f;
-    private float Height = 72f;
-
-    // Char controller ported vars
-    public BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
-    private int _stuckTries;
-    [Property] public TagSet IgnoreLayers { get; set; } = new TagSet();
-
-    [Sync] private Vector3 WishDir {get;set;} = Vector3.Zero;
-    [Sync] public Vector3 Velocity {get;set;} = Vector3.Zero;
-    
 	private CameraComponent Camera;
 	private ModelRenderer BodyRenderer;
+
+    // Internal Variables
+    public float Stamina = 80f;
+    private float CrouchTime = 0.1f;
+    private float jumpStartHeight = 0f;
+    private float jumpHighestHeight = 0f;
+    private bool AlreadyGrounded = true;
+
+    // Size
+    private float Radius = 16f;
+    private float Height = 72f;
+    private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
+    private int _stuckTries;
+
+    // Synced internal vars
+    [Sync] private float InternalMoveSpeed {get;set;} = 250f;
+    [Sync] public Vector3 WishDir {get;set;} = Vector3.Zero;
+    [Sync] public Vector3 Velocity {get;set;} = Vector3.Zero;
 	[Sync] public Vector2 LookAngle {get;set;}
     
-	protected override void OnAwake() {
-        Scene.FixedUpdateFrequency = 64;
-
-        BodyRenderer = Body.Components.Get<ModelRenderer>();
-        animationHelper = Components.GetInChildrenOrSelf<CitizenAnimationHelper>();
-        // characterController = Components.Get<CharacterController>();
-
-		if ( IsProxy )
-			return;
-        
-        // UI.Name = "LocalUI";
-        // UI.Components.Create<ScreenPanel>();
-        // UI.Components.Create<TestUI>();
-
-        // characterController.Radius = 16;
-        // characterController.Height = 72;
-        // characterController.Bounciness = 0;
-        // characterController.Acceleration = 0;
-        
-		Camera = Scene.Camera.Components.Get<CameraComponent>();
-        
-    }
+    // Fucntions to make things slightly nicer
 
     Angles GetLookAngleAsAngles() {
         return new Angles(LookAngle.x, LookAngle.y, 0);
@@ -97,9 +75,9 @@ public sealed class PlayerController : Component
 
     private void ClearGround() {
         IsOnGround = false;
-        // GroundObject = null;
-        // GroundCollider = null;
     }
+
+    // Character Controller Functions
 
     private void Move(bool step) {
         if (step && IsOnGround)
@@ -115,6 +93,7 @@ public sealed class PlayerController : Component
 
         Vector3 position = base.GameObject.Transform.Position;
         CharacterControllerHelper characterControllerHelper = new CharacterControllerHelper(BuildTrace(position, position), position, Velocity);
+        characterControllerHelper.Bounce = 0;
         characterControllerHelper.MaxStandableAngle = 45.5f;
         if (step && IsOnGround)
         {
@@ -129,7 +108,7 @@ public sealed class PlayerController : Component
         Velocity = characterControllerHelper.Velocity;
     }
     
-    public void Move()
+    private void Move()
     {
         if (!TryUnstuck())
         {
@@ -210,7 +189,7 @@ public sealed class PlayerController : Component
         return source.Size(in hull).WithoutTags(IgnoreLayers).IgnoreGameObjectHierarchy(base.GameObject);
     }
 
-    void GatherInput() {
+    private void GatherInput() {
         WishDir = 0;
 
         var rot = new Angles(0, Head.Transform.Rotation.Angles().yaw, 0).ToRotation();
@@ -228,7 +207,21 @@ public sealed class PlayerController : Component
         if (Input.Pressed("Duck") || Input.Released("Duck")) CrouchTime += 0.1f;
     }
 
-    void ApplyFriction() {
+    private void UpdateCitizenAnims() {
+        if (animationHelper == null) return;
+
+        animationHelper.WithWishVelocity(WishDir * InternalMoveSpeed);
+        animationHelper.WithVelocity(Velocity);
+        animationHelper.AimAngle = Head.Transform.Rotation;
+        animationHelper.IsGrounded = IsOnGround;
+        animationHelper.WithLook(Head.Transform.Rotation.Forward, 1f, 0.75f, 0.5f);
+        animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
+        animationHelper.DuckLevel = IsCrouching ? 1f : 0f;
+    }
+
+    // Source engine magic functions
+
+    private void ApplyFriction() {
         float speed, newspeed, control, drop;
 
         speed = Velocity.Length;
@@ -267,7 +260,7 @@ public sealed class PlayerController : Component
         Velocity -= (1 - newspeed) * Velocity;
     }
 
-    void Accelerate(Vector3 wishdir, float wishspeed, float accel) {
+    private void Accelerate(Vector3 wishdir, float wishspeed, float accel) {
         // See if we are changing direction a bit
         float currentspeed = Vector3.Dot(Velocity, wishdir);
 
@@ -284,7 +277,7 @@ public sealed class PlayerController : Component
         Velocity += wishdir.WithZ(0) * accelspeed;
     }
 
-    void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
+    private void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
         float addspeed, accelspeed, currentspeed;
 
         // Cap Speed 
@@ -307,13 +300,11 @@ public sealed class PlayerController : Component
 
         Velocity += wishDir * addspeed;
     }
-
-    void GroundMove() {
+    
+    private void GroundMove() {
         float wishSpeed = WishDir.Length * InternalMoveSpeed * 1.8135f; // this is shit, why mult???
         Accelerate(WishDir, wishSpeed, Acceleration);
-        if (Velocity.z < 0) {
-            Velocity = Velocity.WithZ(0);
-        }
+        if (Velocity.z < 0) Velocity = Velocity.WithZ(0);
 
         if ((HoldToJump && Input.Down("Jump")) || Input.Pressed("Jump")) {
             Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
@@ -323,20 +314,22 @@ public sealed class PlayerController : Component
         }
     }
 
-    void AirMove() {
+    private void AirMove() {
         AirAccelerate(WishDir, WishDir.Length * InternalMoveSpeed, AirAcceleration);
     }
+    
+    // Overrides
 
-    void UpdateCitizenAnims() {
-        if (animationHelper == null) return;
+	protected override void OnAwake() {
+        Scene.FixedUpdateFrequency = 64;
 
-        animationHelper.WithWishVelocity(WishDir * InternalMoveSpeed);
-        animationHelper.WithVelocity(Velocity);
-        animationHelper.AimAngle = Head.Transform.Rotation;
-        animationHelper.IsGrounded = IsOnGround;
-        animationHelper.WithLook(Head.Transform.Rotation.Forward, 1f, 0.75f, 0.5f);
-        animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
-        animationHelper.DuckLevel = IsCrouching ? 1f : 0f;
+        BodyRenderer = Body.Components.Get<ModelRenderer>();
+        animationHelper = Components.GetInChildrenOrSelf<CitizenAnimationHelper>();
+
+		if ( IsProxy )
+			return;
+        
+		Camera = Scene.Camera.Components.Get<CameraComponent>();
     }
 
     protected override void OnFixedUpdate() {
@@ -363,13 +356,13 @@ public sealed class PlayerController : Component
 
         if (AlreadyGrounded != IsOnGround) {
             if (IsOnGround) {
-                var heightMult = (jumpMaxHeight - jumpStartHeight) / 46f;
+                var heightMult = (jumpHighestHeight - jumpStartHeight) / 46f;
                 Stamina -= Stamina * StaminaLandingCost * 2.9625f * heightMult;
                 Stamina = (Stamina * 10).FloorToInt() * 0.1f;
                 if (Stamina < 0) Stamina = 0;
             } else {
                 jumpStartHeight = GameObject.Transform.Position.z;
-                jumpMaxHeight = GameObject.Transform.Position.z;
+                jumpHighestHeight = GameObject.Transform.Position.z;
             }
             AlreadyGrounded = IsOnGround;
         }
@@ -399,7 +392,7 @@ public sealed class PlayerController : Component
 
         Velocity += Gravity * Time.Delta * 0.5f;
 
-        if (jumpMaxHeight < GameObject.Transform.Position.z) jumpMaxHeight = GameObject.Transform.Position.z;
+        if (jumpHighestHeight < GameObject.Transform.Position.z) jumpHighestHeight = GameObject.Transform.Position.z;
     }
 
 	protected override void OnUpdate() {
@@ -417,7 +410,7 @@ public sealed class PlayerController : Component
 			return;
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
-        
+
         LookAngle += new Vector2(Input.MouseDelta.y * Preferences.Sensitivity * 0.022f, -Input.MouseDelta.x * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
