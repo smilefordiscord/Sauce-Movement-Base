@@ -9,7 +9,7 @@
       "Components": [
         {
           "__type": "MapInstance",
-          "MapName": "local_test3",
+          "MapName": "sog.de_dust2ov_d",
           "OnMapLoaded": null,
           "OnMapUnloaded": null,
           "UseMapFromLaunch": false
@@ -34,7 +34,7 @@
     {
       "Id": "9add79c1-f24d-4881-9b6b-eaf34e0d7a8f",
       "Name": "2D Skybox",
-      "Position": "-53.56705,-175.0966,129.8495",
+      "Position": "-53.56705,-175.0966,307.5175",
       "Tags": "skybox",
       "Enabled": true,
       "Components": [
@@ -48,7 +48,7 @@
     {
       "Id": "0efa71d6-d722-499e-aa96-fdc854b0b47c",
       "Name": "SpawnPoint",
-      "Position": "-27.46532,-139.9398,181.8544",
+      "Position": "-1363.653,-425.9651,128",
       "Enabled": true
     },
     {
@@ -85,131 +85,6 @@
           "Speed": 0
         }
       ]
-    },
-    {
-      "Id": "5f2270bc-9eb5-4a5b-a57b-83633af92301",
-      "Name": "Cube",
-      "Position": "196.9971,71.08929,111.1346",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "ModelRenderer",
-          "BodyGroups": 18446744073709551615,
-          "MaterialGroup": null,
-          "MaterialOverride": "models/citizen_props/trashcan02.vmat",
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        }
-      ]
-    },
-    {
-      "Id": "0abccd10-f6c3-422c-bae0-4bf26432035c",
-      "Name": "Cube (1)",
-      "Position": "-597.2591,-259.059,60.50782",
-      "Rotation": "0.3826835,0,0,0.9238795",
-      "Scale": "1,2.728934,3.035731",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "ModelRenderer",
-          "BodyGroups": 18446744073709551615,
-          "MaterialGroup": null,
-          "MaterialOverride": "materials/grass/floor_grass_a.vmat",
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        },
-        {
-          "__type": "BoxCollider",
-          "Center": "0,0,0",
-          "IsTrigger": false,
-          "Scale": "50,50,50",
-          "Static": false,
-          "Surface": null
-        }
-      ]
-    },
-    {
-      "Id": "290c8ec9-947d-4bc5-aaa2-2776eb06148c",
-      "Name": "Cube (5)",
-      "Position": "-610.5377,-75.15221,26.82187",
-      "Rotation": "0.3351589,-0.5810819,-0.1724856,0.7212912",
-      "Scale": "1,2.337662,3.035731",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "ModelRenderer",
-          "BodyGroups": 18446744073709551615,
-          "MaterialGroup": null,
-          "MaterialOverride": "materials/grass/floor_grass_a.vmat",
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        },
-        {
-          "__type": "BoxCollider",
-          "Center": "0,0,0",
-          "IsTrigger": false,
-          "Scale": "50,50,50",
-          "Static": false,
-          "Surface": null
-        }
-      ]
-    },
-    {
-      "Id": "443737c8-70cf-45f1-a80e-7f532d3d8ba7",
-      "Name": "Cube (3)",
-      "Position": "-597.2591,-333.5348,94.12094",
-      "Rotation": "0.7071068,0,0,0.7071068",
-      "Scale": "1,2.728934,2.750685",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "ModelRenderer",
-          "BodyGroups": 18446744073709551615,
-          "MaterialGroup": null,
-          "MaterialOverride": "materials/grass/floor_grass_a.vmat",
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        },
-        {
-          "__type": "BoxCollider",
-          "Center": "0,0,0",
-          "IsTrigger": false,
-          "Scale": "50,50,50",
-          "Static": false,
-          "Surface": null
-        }
-      ]
-    },
-    {
-      "Id": "c1d8695c-87bd-4a5a-9911-0c92613a7936",
-      "Name": "Cube (2)",
-      "Position": "-139.154,-229.7884,103.2913",
-      "Rotation": "0.3007058,0,0,0.9537169",
-      "Scale": "17.46885,0.1499222,2.775235",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "ModelRenderer",
-          "BodyGroups": 18446744073709551615,
-          "MaterialGroup": null,
-          "MaterialOverride": "materials/generic/wall_brick_new.vmat",
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        },
-        {
-          "__type": "BoxCollider",
-          "Center": "0,0,0",
-          "IsTrigger": false,
-          "Scale": "50,50,50",
-          "Static": false,
-          "Surface": null
-        }
-      ]
     }
   ],
   "SceneProperties": {
@@ -235,9 +110,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-21T10:02:12.9591644-09:00",
-  "__references": [
-    "facepunch.floor_grass_a",
-    "facepunch.wall_brick_new"
-  ]
+  "LastSaved": "2024-02-21T11:35:27.02381-09:00",
+  "__references": []
 }

@@ -78,7 +78,7 @@ public sealed class PlayerController : Component
     }
 
     // Character Controller Functions
-
+    
     private void Move(bool step) {
         if (step && IsOnGround)
         {
