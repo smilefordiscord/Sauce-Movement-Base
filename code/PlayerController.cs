@@ -78,16 +78,16 @@ public sealed class PlayerController : Component
         return Stamina / MaxStamina;
     }
 
-    bool IsOnSlope() {
-        // float angle = characterController.GroundCollider.Transform.Rotation.Angles().AsVector3().z;
-        // if (angle < characterController.GroundAngle && angle != angle) {
-        //     return true;
-        // }
-        if (characterController.GroundCollider == null) return false;
-        // float angle = Vector3.GetAngle(Vector3.Up, characterController.GroundCollider.Transform.Rotation.Angles().AsVector3());
-        // Log.Info(angle);
-        return false;
-    }
+    // bool IsOnSlope() {
+    //     // float angle = characterController.GroundCollider.Transform.Rotation.Angles().AsVector3().z;
+    //     // if (angle < characterController.GroundAngle && angle != angle) {
+    //     //     return true;
+    //     // }
+    //     if (characterController.GroundCollider == null) return false;
+    //     // float angle = Vector3.GetAngle(Vector3.Up, characterController.GroundCollider.Transform.Rotation.Angles().AsVector3());
+    //     // Log.Info(angle);
+    //     return false;
+    // }
 
     void GatherInput() {
         WishDir = 0;
@@ -258,7 +258,7 @@ public sealed class PlayerController : Component
 
         if(characterController.IsOnGround) {
             GroundMove();
-            IsOnSlope();
+            // IsOnSlope();
             Camera.Components.Get<TestUI>().Speed = characterController.Velocity.Length.CeilToInt();
         } else {
             AirMove();
