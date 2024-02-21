@@ -1,0 +1,13 @@
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+
+<root>
+	<div class="speedometer">@Speed u/s</div>
+</root>
+
+@code
+{
+	[Property] public int Speed { get; set; } = 0;
+	protected override int BuildHash() => System.HashCode.Combine(Speed);
+}
