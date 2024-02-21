@@ -61,7 +61,7 @@
           "__type": "CameraComponent",
           "BackgroundColor": "0.33333,0.46275,0.52157,1",
           "ClearFlags": "All",
-          "FieldOfView": 90,
+          "FieldOfView": 100,
           "IsMainCamera": true,
           "Orthographic": false,
           "OrthographicHeight": 1024,
@@ -235,7 +235,7 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-21T07:51:10.2583994-09:00",
+  "LastSaved": "2024-02-21T09:19:01.5560804-09:00",
   "__references": [
     "facepunch.floor_grass_a",
     "facepunch.wall_brick_new"

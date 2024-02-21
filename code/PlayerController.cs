@@ -3,8 +3,6 @@ using Sandbox.Citizen;
 
 public sealed class PlayerController : Component
 {
-	[Property] private float Sensitivity = 1.5f;
-
     // Movement Properties
     [Property] public float Weight {get;set;} =  1f;
     [Property] public float MoveSpeed {get;set;} = 250f;
@@ -390,8 +388,8 @@ public sealed class PlayerController : Component
 
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
-
-        var fovGoal = 90f + (30 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
+        
+        var fovGoal = 100f + (20 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
         Camera.FieldOfView = Camera.FieldOfView.LerpTo(fovGoal, Time.Delta / 0.25f);
         
         // Log.Info(Velocity);
@@ -419,8 +417,8 @@ public sealed class PlayerController : Component
 			return;
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
-
-        LookAngle += new Vector2(Input.MouseDelta.y * Sensitivity * 0.022f, -Input.MouseDelta.x * Sensitivity * 0.022f);
+        
+        LookAngle += new Vector2(Input.MouseDelta.y * Preferences.Sensitivity * 0.022f, -Input.MouseDelta.x * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
 		Camera.Transform.Position = Head.Transform.Position;
