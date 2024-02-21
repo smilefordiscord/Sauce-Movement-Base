@@ -7,7 +7,7 @@
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
-  "Resources": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\sbox\\core\\materials",
+  "Resources": "",
   "MenuResources": "*",
   "HasCode": true,
   "CodePath": "/code/",
@@ -201,6 +201,18 @@
       ]
     },
     "MapStartupScene": "scenes/main.scene",
-    "LaunchMode": "Normal"
+    "LaunchMode": "Normal",
+    "Compiler": {
+      "RootNamespace": "Sandbox",
+      "DefineConstants": "SANDBOX;ADDON;DEBUG",
+      "NoWarn": "1701;1702;1591;",
+      "WarningsAsErrors": "",
+      "AssemblyReferences": [],
+      "IgnoreFolders": [
+        "editor",
+        "unittest"
+      ],
+      "DistinctAssemblyReferences": []
+    }
   }
 }
