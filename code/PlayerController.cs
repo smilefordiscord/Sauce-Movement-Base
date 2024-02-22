@@ -5,7 +5,6 @@ using Sandbox.Citizen;
 public sealed class PlayerController : Component
 {
     // Movement Properties
-    [Property] public float Weight {get;set;} =  1f;
     [Property] public float MoveSpeed {get;set;} = 250f;
     [Property] public float ShiftSpeed {get;set;} = 130f;
     [Property] public float CrouchSpeed {get;set;} = 85f;
@@ -25,6 +24,7 @@ public sealed class PlayerController : Component
     [Property] public float StaminaLandingCost {get;set;} =  0.05f;
 
     // Other Properties
+    [Property] public float Weight {get;set;} =  1f;
     [Property] public TagSet IgnoreLayers { get; set; } = new TagSet();
     [Property] public GameObject Head {get;set;}
     [Property] public GameObject Body {get;set;}
@@ -48,7 +48,7 @@ public sealed class PlayerController : Component
 
     // Size
     private float Radius = 16f;
-    private float Height = 72f;
+    [Sync] private float Height {get;set;} = 72f;
     private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
     private int _stuckTries;
 
@@ -216,7 +216,7 @@ public sealed class PlayerController : Component
         animationHelper.IsGrounded = IsOnGround;
         animationHelper.WithLook(Head.Transform.Rotation.Forward, 1f, 0.75f, 0.5f);
         animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
-        animationHelper.DuckLevel = IsCrouching ? 1f : 0f;
+        animationHelper.DuckLevel = 1 - (Height - 54f) / 18f;
     }
 
     // Source engine magic functions
@@ -337,10 +337,12 @@ public sealed class PlayerController : Component
         InternalMoveSpeed *= GetStaminaMultiplier();
         InternalMoveSpeed *= Weight;
 
+        // Crouching
         var HeightGoal = 72;
         if (IsCrouching) HeightGoal = 54;
-        CrouchTime = 0.125f; // TODO: FIX 3RD PERSON CROUCHING
+        var InitHeight = Height;
         Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
+        var HeightDiff = (InitHeight - Height).Clamp(0, 10);
         Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
         
         Velocity += Gravity * Time.Delta * 0.5f;
@@ -378,7 +380,10 @@ public sealed class PlayerController : Component
         var fovGoal = 100f + (20 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
         Camera.FieldOfView = Camera.FieldOfView.LerpTo(fovGoal, Time.Delta / 0.25f);
         
-        if (Velocity.Length != 0) {
+        if (HeightDiff > 0) {
+            GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
+            Move();
+        } else if (Velocity.Length != 0) {
             Move();
         }
 
