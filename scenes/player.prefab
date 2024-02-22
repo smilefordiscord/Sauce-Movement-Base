@@ -17,7 +17,7 @@
       {
         "__type": "PlayerController",
         "Acceleration": 5.5,
-        "AirAcceleration": 12,
+        "AirAcceleration": 150,
         "AutoBunnyhopping": true,
         "Body": {
           "_type": "gameobject",
@@ -35,7 +35,7 @@
         "IgnoreLayers": "player",
         "JumpForce": 301.99338,
         "MaxAirWishSpeed": 30,
-        "MaxSpeed": 285,
+        "MaxSpeed": 1000,
         "MaxStamina": 80,
         "MoveSpeed": 250,
         "Radius": 16,
