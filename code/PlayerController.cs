@@ -5,6 +5,7 @@ using Sandbox.Citizen;
 public sealed class PlayerController : Component
 {
     // Movement Properties
+    [Property] public float MaxSpeed {get;set;} = 285f;
     [Property] public float MoveSpeed {get;set;} = 250f;
     [Property] public float ShiftSpeed {get;set;} = 130f;
     [Property] public float CrouchSpeed {get;set;} = 85f;
@@ -297,6 +298,10 @@ public sealed class PlayerController : Component
         if (AlreadyGrounded == IsOnGround) {
             Accelerate(WishDir, WishDir.Length * InternalMoveSpeed * 1.8135f, Acceleration);
         }
+        if (Velocity.WithZ(0).Length > MaxSpeed) {
+            var FixedVel = Velocity.WithZ(0).Normal * MaxSpeed;
+            Velocity = Velocity.WithX(FixedVel.x).WithY(FixedVel.y);
+        }
         if (Velocity.z < 0) Velocity = Velocity.WithZ(0);
 
         if ((AutoBunnyhopping && Input.Down("Jump")) || Input.Pressed("Jump")) {
@@ -377,16 +382,15 @@ public sealed class PlayerController : Component
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
         
+        // CS2 has a fixed fov, this code is not accurate. Too bad!
         var fovGoal = 100f + (20 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
         Camera.FieldOfView = Camera.FieldOfView.LerpTo(fovGoal, Time.Delta / 0.25f);
         
-        if (HeightDiff > 0) {
+        if (Velocity.Length != 0 || HeightDiff > 0) {
             GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
             Move();
-        } else if (Velocity.Length != 0) {
-            Move();
         }
-
+        
         Velocity += Gravity * Time.Delta * 0.5f;
 
         if (jumpHighestHeight < GameObject.Transform.Position.z) jumpHighestHeight = GameObject.Transform.Position.z;
