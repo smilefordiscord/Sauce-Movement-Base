@@ -392,6 +392,9 @@ public sealed class PlayerController : Component
         }
         
         Velocity += Gravity * Time.Delta * 0.5f;
+        
+        // Terminal velocity
+        if (Velocity.Length > 3500) Velocity = Velocity.Normal * 3500;
 
         if (jumpHighestHeight < GameObject.Transform.Position.z) jumpHighestHeight = GameObject.Transform.Position.z;
     }

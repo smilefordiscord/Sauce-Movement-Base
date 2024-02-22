@@ -9,7 +9,7 @@
       "Components": [
         {
           "__type": "MapInstance",
-          "MapName": "sog.de_dust2ov_d",
+          "MapName": "xaimmap.xaim_map",
           "OnMapLoaded": null,
           "OnMapUnloaded": null,
           "UseMapFromLaunch": false
@@ -48,7 +48,8 @@
     {
       "Id": "0efa71d6-d722-499e-aa96-fdc854b0b47c",
       "Name": "SpawnPoint",
-      "Position": "-1363.653,-425.9651,128",
+      "Position": "160,-224,64",
+      "Rotation": "0,0,1,-0.00000004371139",
       "Enabled": true
     },
     {
@@ -128,6 +129,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-22T02:09:13.3071571-09:00",
+  "LastSaved": "2024-02-22T03:29:31.2819225-09:00",
   "__references": []
 }
