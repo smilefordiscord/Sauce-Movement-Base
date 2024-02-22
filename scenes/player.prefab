@@ -1,6 +1,6 @@
 {
   "RootObject": {
-    "Id": "daa4a72f-0383-414a-be5b-33b470e80349",
+    "Id": "e93e7e9f-c186-4695-9aa9-9c6f7fab2704",
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
@@ -13,14 +13,14 @@
         "AutoBunnyhopping": true,
         "Body": {
           "_type": "gameobject",
-          "go": "adaa5a40-45e2-4cc4-b5c8-6fa29112d7ab"
+          "go": "cf6de74d-73b6-419f-a8a7-411b5cc1a64c"
         },
         "CrouchSpeed": 85,
         "Friction": 5.2,
         "Gravity": "0,0,-800",
         "Head": {
           "_type": "gameobject",
-          "go": "25c4b8f9-9cc6-4077-827e-c82c42c2cc17"
+          "go": "9cce2fd8-a40e-4052-b3c3-e4b07e511430"
         },
         "IgnoreLayers": "player",
         "JumpForce": 301.99338,
@@ -33,17 +33,25 @@
         "StaminaRecoveryRate": 60,
         "StopSpeed": 80,
         "Weight": 1
+      },
+      {
+        "__type": "BoxCollider",
+        "Center": "0,0,36",
+        "IsTrigger": false,
+        "Scale": "32,32,72",
+        "Static": false,
+        "Surface": null
       }
     ],
     "Children": [
       {
-        "Id": "25c4b8f9-9cc6-4077-827e-c82c42c2cc17",
+        "Id": "9cce2fd8-a40e-4052-b3c3-e4b07e511430",
         "Name": "Head",
         "Position": "0,0,64",
         "Enabled": true
       },
       {
-        "Id": "adaa5a40-45e2-4cc4-b5c8-6fa29112d7ab",
+        "Id": "cf6de74d-73b6-419f-a8a7-411b5cc1a64c",
         "Name": "Body",
         "Enabled": true,
         "Components": [
@@ -74,7 +82,7 @@
             "LookAtEnabled": false,
             "Target": {
               "_type": "component",
-              "go": "adaa5a40-45e2-4cc4-b5c8-6fa29112d7ab",
+              "go": "cf6de74d-73b6-419f-a8a7-411b5cc1a64c",
               "component_type": "SkinnedModelRenderer"
             }
           }

@@ -85,6 +85,24 @@
           "Speed": 0
         }
       ]
+    },
+    {
+      "Id": "83e983de-d3ed-4348-a96d-d8966203ec30",
+      "Name": "crate01",
+      "Position": "-1258.095,-549.7355,128.23",
+      "Tags": "pickupable",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Prop",
+          "Health": 30,
+          "IsStatic": false,
+          "Model": "models/citizen_props/crate01.vmdl",
+          "OnPropBreak": null,
+          "OnPropTakeDamage": null,
+          "ShowCreatedComponents": false
+        }
+      ]
     }
   ],
   "SceneProperties": {
@@ -110,6 +128,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-21T16:20:14.2840897-09:00",
+  "LastSaved": "2024-02-21T16:59:47.0976326-09:00",
   "__references": []
 }
