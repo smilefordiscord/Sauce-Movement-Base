@@ -62,7 +62,7 @@
           "__type": "CameraComponent",
           "BackgroundColor": "0.33333,0.46275,0.52157,1",
           "ClearFlags": "All",
-          "FieldOfView": 100,
+          "FieldOfView": 110,
           "IsMainCamera": true,
           "Orthographic": false,
           "OrthographicHeight": 1024,
@@ -129,6 +129,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-22T03:29:31.2819225-09:00",
+  "LastSaved": "2024-02-22T09:16:17.3455565-09:00",
   "__references": []
 }

@@ -4,25 +4,26 @@ using Sandbox.Citizen;
 
 public sealed class PlayerController : Component
 {
-    // Movement Properties
-    [Property] public float MaxSpeed {get;set;} = 285f;
-    [Property] public float MoveSpeed {get;set;} = 250f;
-    [Property] public float ShiftSpeed {get;set;} = 130f;
-    [Property] public float CrouchSpeed {get;set;} = 85f;
-    [Property] public float StopSpeed {get;set;} = 80f;
-    [Property] public float Friction {get;set;} = 5.2f;
-    [Property] public float Acceleration {get;set;} = 5.5f;
-    [Property] public float AirAcceleration {get;set;} = 12f;
-    [Property] public float MaxAirWishSpeed {get;set;} = 30f;
-    [Property] public float JumpForce {get;set;} = 301.993378f;
-    [Property] private bool AutoBunnyhopping {get;set;} = false;
     [Property] public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
     
+    // Movement Properties
+    [Property, Group("Movement Properties")] public float MaxSpeed {get;set;} = 285f;
+    [Property, Group("Movement Properties")] public float MoveSpeed {get;set;} = 250f;
+    [Property, Group("Movement Properties")] public float ShiftSpeed {get;set;} = 130f;
+    [Property, Group("Movement Properties")] public float CrouchSpeed {get;set;} = 85f;
+    [Property, Group("Movement Properties")] public float StopSpeed {get;set;} = 80f;
+    [Property, Group("Movement Properties")] public float Friction {get;set;} = 5.2f;
+    [Property, Group("Movement Properties")] public float Acceleration {get;set;} = 5.5f;
+    [Property, Group("Movement Properties")] public float AirAcceleration {get;set;} = 12f;
+    [Property, Group("Movement Properties")] public float MaxAirWishSpeed {get;set;} = 30f;
+    [Property, Group("Movement Properties")] public float JumpForce {get;set;} = 301.993378f;
+    [Property, Group("Movement Properties")] private bool AutoBunnyhopping {get;set;} = false;
+    
     // Stamina Properties
-    [Property] public float MaxStamina {get;set;} = 80f;
-    [Property] public float StaminaRecoveryRate {get;set;} = 60f;
-    [Property] public float StaminaJumpCost {get;set;} =  0.08f;
-    [Property] public float StaminaLandingCost {get;set;} =  0.05f;
+    [Property, Range(0f, 100f), Group("Stamina Properties")] public float MaxStamina {get;set;} = 80f;
+    [Property, Range(0f, 100f), Group("Stamina Properties")] public float StaminaRecoveryRate {get;set;} = 60f;
+    [Property, Range(0f, 1f), Group("Stamina Properties")] public float StaminaJumpCost {get;set;} =  0.08f;
+    [Property, Range(0f, 1f), Group("Stamina Properties")] public float StaminaLandingCost {get;set;} =  0.05f;
 
     // Other Properties
     [Property] public float Weight {get;set;} =  1f;
@@ -41,15 +42,17 @@ public sealed class PlayerController : Component
 	private ModelRenderer BodyRenderer;
 
     // Internal Variables
-    [Property] public float Stamina = 80f;
+    public float Stamina = 80f;
     private float CrouchTime = 0.1f;
     private float jumpStartHeight = 0f;
     private float jumpHighestHeight = 0f;
     private bool AlreadyGrounded = true;
 
     // Size
-    private float Radius = 16f;
-    [Sync] private float Height {get;set;} = 72f;
+    [Property, Group("Size")] private float Radius {get;set;} = 16;
+    [Property, Group("Size")] [Sync] private float Height {get;set;} = 72f;
+    private float StandingHeight {get;set;} = 72;
+    [Property, Group("Size")] private float CroucingHeight {get;set;} = 54;
     private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
     private int _stuckTries;
 
@@ -277,13 +280,16 @@ public sealed class PlayerController : Component
     }
 
     private void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
-        float addspeed, accelspeed, currentspeed;
+        float addspeed, accelspeed, currentspeed, wshspd;
+
+        wshspd = wishSpeed;
 
         // Cap Speed 
-        if (wishSpeed > MaxAirWishSpeed) wishSpeed = MaxAirWishSpeed;
+        if (wshspd > MaxAirWishSpeed)
+            wshspd = MaxAirWishSpeed;
 
         currentspeed = Velocity.WithZ(0).Dot(wishDir);
-        addspeed = wishSpeed - currentspeed;
+        addspeed = wshspd - currentspeed;
 
         if (addspeed <= 0) return;
 
@@ -315,9 +321,15 @@ public sealed class PlayerController : Component
     private void AirMove() {
         AirAccelerate(WishDir, WishDir.Length * InternalMoveSpeed, AirAcceleration);
     }
-    
-    // Overrides
 
+	// Overrides
+    
+    protected override void DrawGizmos() {
+        Gizmo.GizmoDraw draw = Gizmo.Draw;
+        BBox box = BoundingBox;
+        draw.LineBBox(in box);
+    }
+    
 	protected override void OnAwake() {
         Scene.FixedUpdateFrequency = 64;
 
@@ -326,8 +338,10 @@ public sealed class PlayerController : Component
 
 		if ( IsProxy )
 			return;
-        
+            
 		Camera = Scene.Camera.Components.Get<CameraComponent>();
+
+        StandingHeight = Height;
     }
 
     protected override void OnFixedUpdate() {
@@ -381,10 +395,6 @@ public sealed class PlayerController : Component
 
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
-        
-        // CS2 has a fixed fov, this code is not accurate. Too bad!
-        var fovGoal = 100f + (20 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
-        Camera.FieldOfView = Camera.FieldOfView.LerpTo(fovGoal, Time.Delta / 0.25f);
         
         if (Velocity.Length != 0 || HeightDiff > 0) {
             GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);

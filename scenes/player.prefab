@@ -1,58 +1,61 @@
 {
   "RootObject": {
-    "Id": "9097fcca-2730-4968-bad5-cea2089289c5",
+    "Id": "acc520d1-9451-43bc-8ca7-677a3dcf51ea",
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
     "Components": [
       {
+        "__type": "BoxCollider",
+        "__enabled": false,
+        "Center": "0,0,36",
+        "IsTrigger": false,
+        "Scale": "32,32,72",
+        "Static": false,
+        "Surface": null
+      },
+      {
         "__type": "PlayerController",
-        "Stamina": 80,
         "Acceleration": 5.5,
-        "AirAcceleration": 150,
+        "AirAcceleration": 12,
         "AutoBunnyhopping": true,
         "Body": {
           "_type": "gameobject",
-          "go": "1f595a95-0b94-41a8-bfc1-76b6ea44d4a1"
+          "go": "689c465e-06a7-444a-999f-98f023158c95"
         },
         "CrouchSpeed": 85,
+        "CroucingHeight": 54,
         "Friction": 5.2,
         "Gravity": "0,0,-800",
         "Head": {
           "_type": "gameobject",
-          "go": "de929613-0502-42db-acca-f662ddc5b752"
+          "go": "bca96d83-6f14-4d02-a793-5326f2ed592c"
         },
+        "Height": 72,
         "IgnoreLayers": "player",
         "JumpForce": 301.99338,
         "MaxAirWishSpeed": 30,
-        "MaxSpeed": 1000,
+        "MaxSpeed": 285,
         "MaxStamina": 80,
         "MoveSpeed": 250,
+        "Radius": 16,
         "ShiftSpeed": 130,
         "StaminaJumpCost": 0.08,
         "StaminaLandingCost": 0.05,
         "StaminaRecoveryRate": 60,
         "StopSpeed": 80,
         "Weight": 1
-      },
-      {
-        "__type": "BoxCollider",
-        "Center": "0,0,36",
-        "IsTrigger": false,
-        "Scale": "32,32,72",
-        "Static": false,
-        "Surface": null
       }
     ],
     "Children": [
       {
-        "Id": "de929613-0502-42db-acca-f662ddc5b752",
+        "Id": "bca96d83-6f14-4d02-a793-5326f2ed592c",
         "Name": "Head",
         "Position": "0,0,64",
         "Enabled": true
       },
       {
-        "Id": "1f595a95-0b94-41a8-bfc1-76b6ea44d4a1",
+        "Id": "689c465e-06a7-444a-999f-98f023158c95",
         "Name": "Body",
         "Enabled": true,
         "Components": [
@@ -83,7 +86,7 @@
             "LookAtEnabled": false,
             "Target": {
               "_type": "component",
-              "go": "1f595a95-0b94-41a8-bfc1-76b6ea44d4a1",
+              "go": "689c465e-06a7-444a-999f-98f023158c95",
               "component_type": "SkinnedModelRenderer"
             }
           }
