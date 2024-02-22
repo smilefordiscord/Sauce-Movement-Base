@@ -348,7 +348,7 @@ public sealed class PlayerController : Component
         if (AlreadyGrounded != IsOnGround) {
             if (IsOnGround) {
                 var heightMult = (jumpHighestHeight - jumpStartHeight) / 46f;
-                Stamina -= Stamina * StaminaLandingCost * 2.9625f * heightMult;
+                Stamina -= Stamina * StaminaLandingCost * 2.9625f * heightMult.Clamp(0, 1);
                 Stamina = (Stamina * 10).FloorToInt() * 0.1f;
                 if (Stamina < 0) Stamina = 0;
             } else {
