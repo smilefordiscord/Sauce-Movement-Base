@@ -1,3 +1,4 @@
+using System.Data;
 using Sandbox;
 using Sandbox.Citizen;
 
@@ -14,7 +15,7 @@ public sealed class PlayerController : Component
     [Property] public float AirAcceleration {get;set;} = 12f;
     [Property] public float MaxAirWishSpeed {get;set;} = 30f;
     [Property] public float JumpForce {get;set;} = 301.993378f;
-    [Property] private bool HoldToJump {get;set;} = false;
+    [Property] private bool AutoBunnyhopping {get;set;} = false;
     [Property] public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
     
     // Stamina Properties
@@ -34,13 +35,12 @@ public sealed class PlayerController : Component
     [Sync] public bool IsOnGround {get;set;} = false;
 
     // Internal objects
-    private GameObject UI;
     private CitizenAnimationHelper animationHelper;
 	private CameraComponent Camera;
 	private ModelRenderer BodyRenderer;
 
     // Internal Variables
-    public float Stamina = 80f;
+    [Property] public float Stamina = 80f;
     private float CrouchTime = 0.1f;
     private float jumpStartHeight = 0f;
     private float jumpHighestHeight = 0f;
@@ -162,7 +162,7 @@ public sealed class PlayerController : Component
             ClearGround();
             return;
         }
-
+        
         to.z -= (isOnGround ? 18 : 0.1f);
         SceneTraceResult sceneTraceResult = BuildTrace(from, to).Run();
         if (!sceneTraceResult.Hit || Vector3.GetAngle(in Vector3.Up, in sceneTraceResult.Normal) > 45.5)
@@ -228,7 +228,7 @@ public sealed class PlayerController : Component
 
         // If too slow, return
         if (speed < 0.1f) return;
-
+        
         drop = 0;
 
         // Apply ground friction
@@ -257,56 +257,49 @@ public sealed class PlayerController : Component
             Velocity *= newspeed;
         }
 
-        Velocity -= (1 - newspeed) * Velocity;
+        Velocity -= (1 - newspeed) * Velocity.WithZ(0);
     }
 
-    private void Accelerate(Vector3 wishdir, float wishspeed, float accel) {
-        // See if we are changing direction a bit
-        float currentspeed = Vector3.Dot(Velocity, wishdir);
-
-        // Reduce wishspeed by the amount of veer.
-        float addspeed = wishspeed - currentspeed;
-
-        // If not going to add any speed, done.
+    private void Accelerate(Vector3 wishDir, float wishSpeed, float accel) {
+        float addspeed, accelspeed, currentspeed;
+        
+        currentspeed = Velocity.WithZ(0).Dot(wishDir);
+        addspeed = wishSpeed - currentspeed;
+    
         if (addspeed <= 0) return;
-
-        float accelspeed = accel * wishspeed * Time.Delta;
-
+        
+        accelspeed = accel * wishSpeed * Time.Delta;
+        
         if (accelspeed > addspeed) accelspeed = addspeed;
         
-        Velocity += wishdir.WithZ(0) * accelspeed;
+        Velocity += wishDir * accelspeed;
     }
 
     private void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
         float addspeed, accelspeed, currentspeed;
 
         // Cap Speed 
-        if (wishSpeed > MaxAirWishSpeed) {
-            wishSpeed = MaxAirWishSpeed;
-        }
+        if (wishSpeed > MaxAirWishSpeed) wishSpeed = MaxAirWishSpeed;
 
-        currentspeed = Velocity.Dot(wishDir);
+        currentspeed = Velocity.WithZ(0).Dot(wishDir);
         addspeed = wishSpeed - currentspeed;
 
-        if (addspeed <= 0) {
-            return;
-        }
+        if (addspeed <= 0) return;
 
         accelspeed = accel * wishSpeed * Time.Delta;
 
-        if (accelspeed > addspeed) {
-            accelspeed = addspeed;
-        }
+        if (accelspeed > addspeed) accelspeed = addspeed;
 
-        Velocity += wishDir * addspeed;
+        Velocity += wishDir * accelspeed;
     }
     
     private void GroundMove() {
-        float wishSpeed = WishDir.Length * InternalMoveSpeed * 1.8135f; // this is shit, why mult???
-        Accelerate(WishDir, wishSpeed, Acceleration);
+        if (AlreadyGrounded == IsOnGround) {
+            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed * 1.8135f, Acceleration);
+        }
         if (Velocity.z < 0) Velocity = Velocity.WithZ(0);
 
-        if ((HoldToJump && Input.Down("Jump")) || Input.Pressed("Jump")) {
+        if ((AutoBunnyhopping && Input.Down("Jump")) || Input.Pressed("Jump")) {
             Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
             Stamina -= Stamina * StaminaJumpCost * 2.9625f;
             Stamina = (Stamina * 10).FloorToInt() * 0.1f;
@@ -349,11 +342,9 @@ public sealed class PlayerController : Component
         CrouchTime = 0.125f; // TODO: FIX 3RD PERSON CROUCHING
         Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
         Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
-
+        
         Velocity += Gravity * Time.Delta * 0.5f;
         
-        if(IsOnGround) ApplyFriction();
-
         if (AlreadyGrounded != IsOnGround) {
             if (IsOnGround) {
                 var heightMult = (jumpHighestHeight - jumpStartHeight) / 46f;
@@ -364,18 +355,20 @@ public sealed class PlayerController : Component
                 jumpStartHeight = GameObject.Transform.Position.z;
                 jumpHighestHeight = GameObject.Transform.Position.z;
             }
-            AlreadyGrounded = IsOnGround;
+        } else {
+            if(IsOnGround) ApplyFriction();
         }
-
+        
         if(IsOnGround) {
             GroundMove();
-            // IsOnSlope();
             Camera.Components.Get<TestUI>().Speed = Velocity.Length.CeilToInt();
         } else {
             AirMove();
             Camera.Components.Get<TestUI>().Speed = Velocity.WithZ(0).Length.CeilToInt();
         }
 
+        AlreadyGrounded = IsOnGround;
+        
         CrouchTime -= Time.Delta * 0.33f;
         CrouchTime = CrouchTime.Clamp(0f, 0.5f);
 
@@ -385,7 +378,6 @@ public sealed class PlayerController : Component
         var fovGoal = 100f + (20 * ((Velocity.WithZ(0).Length - 250) / 250).Clamp(0, 1));
         Camera.FieldOfView = Camera.FieldOfView.LerpTo(fovGoal, Time.Delta / 0.25f);
         
-        // Log.Info(Velocity);
         if (Velocity.Length != 0) {
             Move();
         }
