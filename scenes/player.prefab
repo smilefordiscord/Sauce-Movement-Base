@@ -1,6 +1,6 @@
 {
   "RootObject": {
-    "Id": "54952f9c-598d-42c4-9e20-f228756fa968",
+    "Id": "0483856d-042d-4317-9153-ad65e2ec330d",
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
@@ -19,9 +19,13 @@
         "Acceleration": 5.5,
         "AirAcceleration": 150,
         "AutoBunnyhopping": true,
+        "Body": {
+          "_type": "gameobject",
+          "go": "0155ff8c-c9c7-4c85-ae5d-13c2ea06f4de"
+        },
         "CollisionBox": {
           "_type": "component",
-          "go": "54952f9c-598d-42c4-9e20-f228756fa968",
+          "go": "0483856d-042d-4317-9153-ad65e2ec330d",
           "component_type": "BoxCollider"
         },
         "CrouchSpeed": 85,
@@ -29,10 +33,6 @@
         "CustomFOV": 110,
         "CustomGravity": "0,0,-800",
         "Friction": 5.2,
-        "Head": {
-          "_type": "gameobject",
-          "go": "efa6170a-1686-452b-a33f-90b18b1d4001"
-        },
         "IgnoreLayers": "",
         "JumpForce": 301.99338,
         "MaxAirWishSpeed": 30,
@@ -49,45 +49,46 @@
         "UseCustomFOV": true,
         "UseCustomGravity": true,
         "Weight": 1
-      },
-      {
-        "__type": "SkinnedModelRenderer",
-        "AnimationGraph": null,
-        "BodyGroups": 341,
-        "BoneMergeTarget": null,
-        "CreateBoneObjects": false,
-        "MaterialGroup": null,
-        "MaterialOverride": null,
-        "Model": "models/citizen/citizen.vmdl",
-        "RenderType": "On",
-        "Tint": "1,1,1,1"
-      },
-      {
-        "__type": "CitizenAnimationHelper",
-        "BodyWeight": 1,
-        "EyeSource": null,
-        "EyesWeight": 1,
-        "HeadWeight": 1,
-        "Height": 1,
-        "IkLeftFoot": null,
-        "IkLeftHand": null,
-        "IkRightFoot": null,
-        "IkRightHand": null,
-        "LookAt": null,
-        "LookAtEnabled": false,
-        "Target": {
-          "_type": "component",
-          "go": "54952f9c-598d-42c4-9e20-f228756fa968",
-          "component_type": "SkinnedModelRenderer"
-        }
       }
     ],
     "Children": [
       {
-        "Id": "efa6170a-1686-452b-a33f-90b18b1d4001",
-        "Name": "Head",
-        "Position": "0,0,64",
-        "Enabled": true
+        "Id": "0155ff8c-c9c7-4c85-ae5d-13c2ea06f4de",
+        "Name": "Body",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "SkinnedModelRenderer",
+            "AnimationGraph": null,
+            "BodyGroups": 341,
+            "BoneMergeTarget": null,
+            "CreateBoneObjects": false,
+            "MaterialGroup": null,
+            "MaterialOverride": null,
+            "Model": "models/citizen/citizen.vmdl",
+            "RenderType": "On",
+            "Tint": "1,1,1,1"
+          },
+          {
+            "__type": "CitizenAnimationHelper",
+            "BodyWeight": 1,
+            "EyeSource": null,
+            "EyesWeight": 1,
+            "HeadWeight": 1,
+            "Height": 1,
+            "IkLeftFoot": null,
+            "IkLeftHand": null,
+            "IkRightFoot": null,
+            "IkRightHand": null,
+            "LookAt": null,
+            "LookAtEnabled": false,
+            "Target": {
+              "_type": "component",
+              "go": "0155ff8c-c9c7-4c85-ae5d-13c2ea06f4de",
+              "component_type": "SkinnedModelRenderer"
+            }
+          }
+        ]
       }
     ]
   },

@@ -1,5 +1,4 @@
 using System;
-using Microsoft.VisualBasic;
 using Sandbox;
 using Sandbox.Citizen;
 
@@ -42,7 +41,7 @@ public sealed class PlayerController : Component
     // Other Properties
     [Property, Title("Speed Multiplier"), Description("Useful for weapons that slow you down.")] public float Weight {get;set;} =  1f;
     [Property, Description("Add 'player' tag to disable collisions with other players.")] public TagSet IgnoreLayers { get; set; } = new TagSet();
-    [Property] public GameObject Head {get;set;}
+    [Property] public GameObject Body {get;set;}
     [Property] public BoxCollider CollisionBox {get;set;}
 
     // State Bools
@@ -62,6 +61,8 @@ public sealed class PlayerController : Component
     private float jumpHighestHeight = 0f;
     private bool AlreadyGrounded = true;
     [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
+    private Angles LookAngleAngles => new Angles(LookAngle.x, LookAngle.y, 0);
+    private float StaminaMultiplier => Stamina / MaxStamina;
     
     // Size
     [Property, Group("Size"), Description("CS2 Default: 16f")] private float Radius {get;set;} = 16f;
@@ -79,14 +80,6 @@ public sealed class PlayerController : Component
 	[Sync] public Vector2 LookAngle {get;set;}
     
     // Fucntions to make things slightly nicer
-
-    private Angles GetLookAngleAsAngles() {
-        return new Angles(LookAngle.x, LookAngle.y, 0);
-    }
-
-    private float GetStaminaMultiplier() {
-        return Stamina / MaxStamina;
-    }
 
     public void Punch(in Vector3 amount) {
         ClearGround();
@@ -206,11 +199,11 @@ public sealed class PlayerController : Component
         BBox hull = BoundingBox;
         return source.Size(in hull).WithoutTags(IgnoreLayers).IgnoreGameObjectHierarchy(base.GameObject);
     }
-
+    
     private void GatherInput() {
         WishDir = 0;
 
-        var rot = new Angles(0, Head.Transform.Rotation.Angles().yaw, 0).ToRotation();
+        var rot = LookAngleAngles.WithPitch(0).ToRotation();
         WishDir = (rot.Forward * Input.AnalogMove.x) + (rot.Left * Input.AnalogMove.y);
         if (!WishDir.IsNearZeroLength) WishDir = WishDir.Normal;
 
@@ -229,9 +222,9 @@ public sealed class PlayerController : Component
 
         animationHelper.WithWishVelocity(WishDir * InternalMoveSpeed);
         animationHelper.WithVelocity(Velocity);
-        animationHelper.AimAngle = Head.Transform.Rotation;
+        animationHelper.AimAngle = LookAngleAngles.ToRotation();
         animationHelper.IsGrounded = IsOnGround;
-        animationHelper.WithLook(Head.Transform.Rotation.Forward, 1f, 0.75f, 0.5f);
+        animationHelper.WithLook(LookAngleAngles.Forward, 1f, 0.75f, 0.5f);
         animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
         animationHelper.DuckLevel = ((1 - (Height / StandingHeight)) * 3).Clamp(0, 1);
     }
@@ -324,7 +317,7 @@ public sealed class PlayerController : Component
             jumpStartHeight = GameObject.Transform.Position.z;
             jumpHighestHeight = GameObject.Transform.Position.z;
             animationHelper.TriggerJump();
-            Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
+            Punch(new Vector3(0, 0, JumpForce * StaminaMultiplier));
             Stamina -= Stamina * StaminaJumpCost * 2.9625f;
             Stamina = (Stamina * 10).FloorToInt() * 0.1f;
             if (Stamina < 0) Stamina = 0;
@@ -338,15 +331,15 @@ public sealed class PlayerController : Component
 	// Overrides
     
     protected override void DrawGizmos() {
-        Gizmo.GizmoDraw draw = Gizmo.Draw;
         BBox box = new BBox(new Vector3(-Radius, -Radius, 0f), new Vector3(Radius, Radius, Height));
-        draw.LineBBox(in box);
+        box.Rotate(GameObject.Transform.LocalRotation.Inverse);
+        Gizmo.Draw.LineBBox(in box);
     }
     
 	protected override void OnAwake() {
         Scene.FixedUpdateFrequency = 64;
 
-        BodyRenderer = GameObject.Components.Get<ModelRenderer>();
+        BodyRenderer = Components.GetInChildrenOrSelf<ModelRenderer>();
         animationHelper = Components.GetInChildrenOrSelf<CitizenAnimationHelper>();
 
 		if ( IsProxy )
@@ -363,7 +356,7 @@ public sealed class PlayerController : Component
             CollisionBox.Scale = LastSize;
             CollisionBox.Center = new Vector3(0, 0, LastSize.z / 2);
         }
-
+        
 		if ( IsProxy )
 			return;
         
@@ -378,8 +371,7 @@ public sealed class PlayerController : Component
         InternalMoveSpeed = MoveSpeed;
         if (IsWalking) InternalMoveSpeed = ShiftSpeed;
         if (IsCrouching) InternalMoveSpeed = CrouchSpeed;
-        InternalMoveSpeed *= GetStaminaMultiplier();
-        InternalMoveSpeed *= Weight;
+        InternalMoveSpeed *= StaminaMultiplier * Weight;
 
         // Crouching
         if (IsCrouching) {
@@ -395,7 +387,7 @@ public sealed class PlayerController : Component
         var HeightDiff = (InitHeight - Height).Clamp(0, 10);
         
         LastSize = new Vector3(Radius * 2, Radius * 2, HeightGoal);
-        Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
+        // Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
         
         Velocity += Gravity * Time.Delta * 0.5f;
         
@@ -448,11 +440,7 @@ public sealed class PlayerController : Component
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.On;
 
-        var Rotation = GetLookAngleAsAngles();
-		GameObject.Transform.Rotation = Rotation.WithPitch(0).ToRotation();
-
-        Rotation = GetLookAngleAsAngles().ToRotation();
-		Head.Transform.Rotation = Rotation;
+		Body.Transform.Rotation = LookAngleAngles.WithPitch(0).ToRotation();
         
 		if ( IsProxy )
 			return;
@@ -465,8 +453,8 @@ public sealed class PlayerController : Component
         LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y) * Preferences.Sensitivity * 0.022f, -(Input.MouseDelta.x + ControllerInput.x) * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
-		Camera.Transform.Position = Head.Transform.Position;
-		Camera.Transform.Rotation = Head.Transform.Rotation;
+		Camera.Transform.Position = GameObject.Transform.Position + new Vector3(0, 0, Height * 0.89f);
+		Camera.Transform.Rotation = LookAngleAngles.ToRotation();
 
         if (UseCustomFOV) {
             Camera.FieldOfView = CustomFOV;
