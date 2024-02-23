@@ -201,7 +201,7 @@
       ]
     },
     "MapStartupScene": "scenes/main.scene",
-    "LaunchMode": "Normal",
+    "LaunchMode": "QuickPlay",
     "Compiler": {
       "RootNamespace": "Sandbox",
       "DefineConstants": "SANDBOX;ADDON;DEBUG",
