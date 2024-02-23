@@ -432,10 +432,6 @@ public sealed class PlayerController : Component
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
         
-        // if (Velocity.Length != 0 || HeightDiff > 0f) {
-        //     GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
-        //     Move();
-        // }
         if (HeightDiff > 0f) GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
         Velocity *= GameObject.Transform.Scale;
         Move();
