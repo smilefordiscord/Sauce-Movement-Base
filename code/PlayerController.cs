@@ -259,8 +259,7 @@ public sealed class PlayerController : Component
             } else {
                 control = speed;
             }
-            // Add the amount to the drop amount.
-            drop += control * Friction * Time.Delta;
+            drop += control * Friction * Time.Delta; // Add the amount to the drop amount.
         }
 
         // Scale the velocity
@@ -269,10 +268,8 @@ public sealed class PlayerController : Component
 
         if (newspeed != speed)
         {
-            // Determine proportion of old speed we are using.
-            newspeed /= speed;
-            // Adjust velocity according to proportion.
-            Velocity *= newspeed;
+            newspeed /= speed; // Determine proportion of old speed we are using.
+            Velocity *= newspeed; // Adjust velocity according to proportion.
         }
 
         Velocity -= (1 - newspeed) * Velocity.WithZ(0);
@@ -316,7 +313,7 @@ public sealed class PlayerController : Component
     
     private void GroundMove() {
         if (AlreadyGrounded == IsOnGround) {
-            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed * 1.8135f, Acceleration);
+            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed * 1.8135f, Acceleration); // lame magic number
         }
         if (Velocity.WithZ(0).Length > MaxSpeed) {
             var FixedVel = Velocity.WithZ(0).Normal * MaxSpeed;
@@ -328,7 +325,7 @@ public sealed class PlayerController : Component
             jumpStartHeight = GameObject.Transform.Position.z;
             jumpHighestHeight = GameObject.Transform.Position.z;
             animationHelper.TriggerJump();
-            Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));// * MathF.Sqrt(GameObject.Transform.Scale.z * GameObject.Transform.Scale.z)));
+            Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
             Stamina -= Stamina * StaminaJumpCost * 2.9625f;
             Stamina = (Stamina * 10).FloorToInt() * 0.1f;
             if (Stamina < 0) Stamina = 0;
