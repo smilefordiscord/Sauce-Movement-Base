@@ -1,4 +1,5 @@
 using System;
+using Microsoft.VisualBasic;
 using Sandbox;
 using Sandbox.Citizen;
 
@@ -462,8 +463,10 @@ public sealed class PlayerController : Component
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
         
-        // s&box uses a different m_yaw/m_pitch value than every other Source2/Source/gldsrc/quake engine game, still dont know why.
-        LookAngle += new Vector2(Input.AnalogLook.AsVector3().x / 0.013f * 0.022f, Input.AnalogLook.AsVector3().y / 0.013f * 0.022f);
+        var ControllerInput = Input.GetAnalog(InputAnalog.Look);
+        if (ControllerInput.Length > 1) ControllerInput = ControllerInput.Normal;
+        ControllerInput *= 50;
+        LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y) * Preferences.Sensitivity * 0.022f, -(Input.MouseDelta.x + ControllerInput.x) * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
 		Camera.Transform.Position = Head.Transform.Position;
