@@ -70,9 +70,9 @@ public sealed class PlayerController : Component
     [Property, Group("Size"), Description("CS2 Default: 54f")] private float CroucingHeight {get;set;} = 54f;
     [Sync] private float Height {get;set;} = 72f;
     [Sync] private float HeightGoal {get;set;} = 72f;
-    private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height) * GameObject.Transform.Scale);
+    private BBox BoundingBox => new BBox(new Vector3(-Radius * GameObject.Transform.Scale.x, -Radius * GameObject.Transform.Scale.y, 0f), new Vector3(Radius * GameObject.Transform.Scale.x, Radius * GameObject.Transform.Scale.y, Height * GameObject.Transform.Scale.z));
     private int _stuckTries;
-
+    
     // Synced internal vars
     [Sync] private float InternalMoveSpeed {get;set;} = 250f;
     [Sync] public Vector3 WishDir {get;set;} = Vector3.Zero;
@@ -343,7 +343,7 @@ public sealed class PlayerController : Component
     
     protected override void DrawGizmos() {
         Gizmo.GizmoDraw draw = Gizmo.Draw;
-        BBox box = BoundingBox;
+        BBox box = new BBox(new Vector3(-Radius, -Radius, 0f), new Vector3(Radius, Radius, Height));
         draw.LineBBox(in box);
     }
     
@@ -465,7 +465,7 @@ public sealed class PlayerController : Component
         
         var ControllerInput = Input.GetAnalog(InputAnalog.Look);
         if (ControllerInput.Length > 1) ControllerInput = ControllerInput.Normal;
-        ControllerInput *= 50;
+        ControllerInput *= 25;
         LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y) * Preferences.Sensitivity * 0.022f, -(Input.MouseDelta.x + ControllerInput.x) * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
