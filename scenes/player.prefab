@@ -15,6 +15,7 @@
       },
       {
         "__type": "PlayerController",
+        "ToggleCrouch": false,
         "Acceleration": 5.5,
         "AirAcceleration": 150,
         "AutoBunnyhopping": true,
@@ -29,8 +30,9 @@
         },
         "CrouchSpeed": 85,
         "CroucingHeight": 54,
+        "CustomFOV": 110,
+        "CustomGravity": "0,0,-800",
         "Friction": 5.2,
-        "Gravity": "0,0,-800",
         "Head": {
           "_type": "gameobject",
           "go": "bca96d83-6f14-4d02-a793-5326f2ed592c"
@@ -48,6 +50,8 @@
         "StaminaRecoveryRate": 60,
         "StandingHeight": 72,
         "StopSpeed": 80,
+        "UseCustomFOV": true,
+        "UseCustomGravity": true,
         "Weight": 1
       }
     ],

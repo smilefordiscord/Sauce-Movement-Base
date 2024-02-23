@@ -9,30 +9,38 @@ using Sandbox.Citizen;
 
 public sealed class PlayerController : Component
 {
-    [Property] public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
+
+    [Property, ToggleGroup("UseCustomGravity", Label = "Use Custom Gravity")] private bool UseCustomGravity {get;set;} = true;
+    [Property, ToggleGroup("UseCustomGravity"), Description("Does not change scene gravity, this is only for the player."), Title("Gravity")] public Vector3 CustomGravity {get;set;} = new Vector3(0, 0, -800f);
+    public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
     
+    [Property, ToggleGroup("UseCustomFOV", Label = "Use Custom Field Of View")] private bool UseCustomFOV {get;set;} = true;
+    [Property, ToggleGroup("UseCustomFOV"), Title("Field Of View"), Range(60f, 120f)] public float CustomFOV {get;set;} = 90f;
+
+    [Property] public bool ToggleCrouch = false;
+
     // Movement Properties
-    [Property, Group("Movement Properties")] public float MaxSpeed {get;set;} = 285.98f;
-    [Property, Group("Movement Properties")] public float MoveSpeed {get;set;} = 250f;
-    [Property, Group("Movement Properties")] public float ShiftSpeed {get;set;} = 130f;
-    [Property, Group("Movement Properties")] public float CrouchSpeed {get;set;} = 85f;
-    [Property, Group("Movement Properties")] public float StopSpeed {get;set;} = 80f;
-    [Property, Group("Movement Properties")] public float Friction {get;set;} = 5.2f;
-    [Property, Group("Movement Properties")] public float Acceleration {get;set;} = 5.5f;
-    [Property, Group("Movement Properties")] public float AirAcceleration {get;set;} = 12f;
-    [Property, Group("Movement Properties")] public float MaxAirWishSpeed {get;set;} = 30f;
-    [Property, Group("Movement Properties")] public float JumpForce {get;set;} = 301.993378f;
-    [Property, Group("Movement Properties")] private bool AutoBunnyhopping {get;set;} = false;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 285.98f")] public float MaxSpeed {get;set;} = 285.98f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 250f")] public float MoveSpeed {get;set;} = 250f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 130f")] public float ShiftSpeed {get;set;} = 130f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 85f")] public float CrouchSpeed {get;set;} = 85f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 80f")] public float StopSpeed {get;set;} = 80f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 5.2f")] public float Friction {get;set;} = 5.2f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 5.5f")] public float Acceleration {get;set;} = 5.5f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 12f")] public float AirAcceleration {get;set;} = 12f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 30f")] public float MaxAirWishSpeed {get;set;} = 30f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 301.993378f")] public float JumpForce {get;set;} = 301.993378f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: false")] private bool AutoBunnyhopping {get;set;} = false;
     
     // Stamina Properties
-    [Property, Range(0f, 100f), Group("Stamina Properties")] public float MaxStamina {get;set;} = 80f;
-    [Property, Range(0f, 100f), Group("Stamina Properties")] public float StaminaRecoveryRate {get;set;} = 60f;
-    [Property, Range(0f, 1f), Group("Stamina Properties")] public float StaminaJumpCost {get;set;} =  0.08f;
-    [Property, Range(0f, 1f), Group("Stamina Properties")] public float StaminaLandingCost {get;set;} =  0.05f;
-
+    [Property, Range(0f, 100f), Group("Stamina Properties"), Description("CS2 Default: 80f")] public float MaxStamina {get;set;} = 80f;
+    [Property, Range(0f, 100f), Group("Stamina Properties"), Description("CS2 Default: 60f")] public float StaminaRecoveryRate {get;set;} = 60f;
+    [Property, Range(0f, 1f), Group("Stamina Properties"), Description("CS2 Default: 0.08f")] public float StaminaJumpCost {get;set;} =  0.08f;
+    [Property, Range(0f, 1f), Group("Stamina Properties"), Description("CS2 Default: 0.05f")] public float StaminaLandingCost {get;set;} =  0.05f;
+    
     // Other Properties
-    [Property] public float Weight {get;set;} =  1f;
-    [Property] public TagSet IgnoreLayers { get; set; } = new TagSet();
+    [Property, Title("Speed Multiplier"), Description("Useful for weapons that slow you down.")] public float Weight {get;set;} =  1f;
+    [Property, Description("Add 'player' tag to disable collisions with other players.")] public TagSet IgnoreLayers { get; set; } = new TagSet();
     [Property] public GameObject Head {get;set;}
     [Property] public GameObject Body {get;set;}
     [Property] public BoxCollider CollisionBox {get;set;}
@@ -56,12 +64,12 @@ public sealed class PlayerController : Component
     [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
     
     // Size
-    [Property, Group("Size")] private float Radius {get;set;} = 16;
-    [Property, Group("Size")] private float StandingHeight {get;set;} = 72;
-    [Property, Group("Size")] private float CroucingHeight {get;set;} = 54;
+    [Property, Group("Size"), Description("CS2 Default: 16f")] private float Radius {get;set;} = 16f;
+    [Property, Group("Size"), Description("CS2 Default: 72f")] private float StandingHeight {get;set;} = 72f;
+    [Property, Group("Size"), Description("CS2 Default: 54f")] private float CroucingHeight {get;set;} = 54f;
     [Sync] private float Height {get;set;} = 72f;
     [Sync] private float HeightGoal {get;set;} = 72f;
-    private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
+    private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height) * GameObject.Transform.Scale);
     private int _stuckTries;
 
     // Synced internal vars
@@ -185,8 +193,8 @@ public sealed class PlayerController : Component
         // GroundObject = sceneTraceResult.GameObject;
         // GroundCollider = sceneTraceResult.Shape?.Collider as Collider;
         if (isOnGround && !sceneTraceResult.StartedSolid && sceneTraceResult.Fraction > 0f && sceneTraceResult.Fraction < 1f)
-        {
-            base.Transform.Position = sceneTraceResult.EndPosition + sceneTraceResult.Normal * 0f;
+        { // for some reason this fixes sliding down slopes when standing still, idek
+            base.Transform.Position = sceneTraceResult.EndPosition + sceneTraceResult.Normal * 0f; 
         }
     }
 
@@ -213,9 +221,12 @@ public sealed class PlayerController : Component
         if ( !WishDir.IsNearZeroLength ) WishDir = WishDir.Normal;
 
         IsWalking = Input.Down("Slow");
-        // IsCrouching = Input.Down("Duck");
+        if (ToggleCrouch) {
         if (Input.Pressed("Duck")) {
             IsCrouching = !IsCrouching;
+        }
+        } else {
+            IsCrouching = Input.Down("Duck");
         }
 
         if (Input.Pressed("Duck") || Input.Released("Duck")) CrouchTime += 0.1f;
@@ -321,8 +332,10 @@ public sealed class PlayerController : Component
         if (Velocity.z < 0) Velocity = Velocity.WithZ(0);
 
         if ((AutoBunnyhopping && Input.Down("Jump")) || Input.Pressed("Jump")) {
+            jumpStartHeight = GameObject.Transform.Position.z;
+            jumpHighestHeight = GameObject.Transform.Position.z;
             animationHelper.TriggerJump();
-            Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
+            Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));// * MathF.Sqrt(GameObject.Transform.Scale.z * GameObject.Transform.Scale.z)));
             Stamina -= Stamina * StaminaJumpCost * 2.9625f;
             Stamina = (Stamina * 10).FloorToInt() * 0.1f;
             if (Stamina < 0) Stamina = 0;
@@ -362,13 +375,15 @@ public sealed class PlayerController : Component
             CollisionBox.Center = new Vector3(0, 0, LastSize.z / 2);
         }
 
-        CollisionBox.Enabled = true;
-        
 		if ( IsProxy )
 			return;
         
-        CollisionBox.Enabled = false;
-
+        if (UseCustomGravity) {
+            Gravity = CustomGravity;
+        } else {
+            Gravity = Scene.PhysicsWorld.Gravity;
+        }
+        
         GatherInput();
 
         InternalMoveSpeed = MoveSpeed;
@@ -382,7 +397,8 @@ public sealed class PlayerController : Component
             HeightGoal = CroucingHeight;
         } else {
             HeightGoal = StandingHeight;
-            // Perform upward trace to ensure not clipping
+            // TODO: Perform upward trace to ensure not clipping
+            // If clipping and not already at standing height force crouching height
         }
         
         var InitHeight = Height;
@@ -396,6 +412,7 @@ public sealed class PlayerController : Component
         
         if (AlreadyGrounded != IsOnGround) {
             if (IsOnGround) {
+                Log.Info(jumpHighestHeight - GameObject.Transform.Position.z);
                 var heightMult = Math.Abs(jumpHighestHeight - GameObject.Transform.Position.z) / 46f;
                 Stamina -= Stamina * StaminaLandingCost * 2.9625f * heightMult.Clamp(0, 1f);
                 Stamina = (Stamina * 10).FloorToInt() * 0.1f;
@@ -429,8 +446,10 @@ public sealed class PlayerController : Component
         //     Move();
         // }
         if (HeightDiff > 0f) GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
+        Velocity *= GameObject.Transform.Scale;
         Move();
         CategorizePosition();
+        Velocity /= GameObject.Transform.Scale;
         
         Velocity += Gravity * Time.Delta * 0.5f;
         
@@ -455,12 +474,18 @@ public sealed class PlayerController : Component
 			return;
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
-
+        
         LookAngle += new Vector2(Input.MouseDelta.y * Preferences.Sensitivity * 0.022f, -Input.MouseDelta.x * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
 		Camera.Transform.Position = Head.Transform.Position;
 		Camera.Transform.Rotation = Head.Transform.Rotation;
+
+        if (UseCustomFOV) {
+            Camera.FieldOfView = CustomFOV;
+        } else {
+            Camera.FieldOfView = Preferences.FieldOfView;
+        }
 	}
 
 }
