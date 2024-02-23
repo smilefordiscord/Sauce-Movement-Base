@@ -206,25 +206,17 @@ public sealed class PlayerController : Component
         BBox hull = BoundingBox;
         return source.Size(in hull).WithoutTags(IgnoreLayers).IgnoreGameObjectHierarchy(base.GameObject);
     }
-
+    
     private void GatherInput() {
         WishDir = 0;
 
         var rot = new Angles(0, Head.Transform.Rotation.Angles().yaw, 0).ToRotation();
-        if (Input.Down("Forward")) WishDir += rot.Forward;
-        if (Input.Down("Backward")) WishDir += rot.Backward;
-        if (Input.Down("Left")) WishDir += rot.Left;
-        if (Input.Down("Right")) WishDir += rot.Right;
-        
-        WishDir = WishDir.WithZ( 0 );
-
-        if ( !WishDir.IsNearZeroLength ) WishDir = WishDir.Normal;
+        WishDir = (rot.Forward * Input.AnalogMove.x) + (rot.Left * Input.AnalogMove.y);
+        if (!WishDir.IsNearZeroLength) WishDir = WishDir.Normal;
 
         IsWalking = Input.Down("Slow");
         if (ToggleCrouch) {
-        if (Input.Pressed("Duck")) {
-            IsCrouching = !IsCrouching;
-        }
+            if (Input.Pressed("Duck")) IsCrouching = !IsCrouching;
         } else {
             IsCrouching = Input.Down("Duck");
         }
@@ -474,7 +466,8 @@ public sealed class PlayerController : Component
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
         
-        LookAngle += new Vector2(Input.MouseDelta.y * Preferences.Sensitivity * 0.022f, -Input.MouseDelta.x * Preferences.Sensitivity * 0.022f);
+        // s&box uses a different m_yaw/m_pitch value than every other Source2/Source/gldsrc/quake engine game, still dont know why.
+        LookAngle += new Vector2(Input.AnalogLook.AsVector3().x / 0.013f * 0.022f, Input.AnalogLook.AsVector3().y / 0.013f * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
 		Camera.Transform.Position = Head.Transform.Position;
