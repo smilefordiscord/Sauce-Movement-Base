@@ -117,7 +117,7 @@ public sealed class PlayerController : Component
         characterControllerHelper.MaxStandableAngle = 45.5f;
         if (step && IsOnGround)
         {
-            characterControllerHelper.TryMoveWithStep(Time.Delta, 18);
+            characterControllerHelper.TryMoveWithStep(Time.Delta, 18f * GameObject.Transform.Scale.z);
         }
         else
         {
@@ -383,7 +383,7 @@ public sealed class PlayerController : Component
         } else {
             Gravity = Scene.PhysicsWorld.Gravity;
         }
-        
+
         GatherInput();
 
         InternalMoveSpeed = MoveSpeed;
@@ -412,7 +412,6 @@ public sealed class PlayerController : Component
         
         if (AlreadyGrounded != IsOnGround) {
             if (IsOnGround) {
-                Log.Info(jumpHighestHeight - GameObject.Transform.Position.z);
                 var heightMult = Math.Abs(jumpHighestHeight - GameObject.Transform.Position.z) / 46f;
                 Stamina -= Stamina * StaminaLandingCost * 2.9625f * heightMult.Clamp(0, 1f);
                 Stamina = (Stamina * 10).FloorToInt() * 0.1f;
