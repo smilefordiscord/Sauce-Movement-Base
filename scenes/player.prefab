@@ -7,7 +7,6 @@
     "Components": [
       {
         "__type": "BoxCollider",
-        "__enabled": false,
         "Center": "0,0,36",
         "IsTrigger": false,
         "Scale": "32,32,72",
@@ -23,6 +22,11 @@
           "_type": "gameobject",
           "go": "689c465e-06a7-444a-999f-98f023158c95"
         },
+        "CollisionBox": {
+          "_type": "component",
+          "go": "acc520d1-9451-43bc-8ca7-677a3dcf51ea",
+          "component_type": "BoxCollider"
+        },
         "CrouchSpeed": 85,
         "CroucingHeight": 54,
         "Friction": 5.2,
@@ -31,8 +35,7 @@
           "_type": "gameobject",
           "go": "bca96d83-6f14-4d02-a793-5326f2ed592c"
         },
-        "Height": 72,
-        "IgnoreLayers": "player",
+        "IgnoreLayers": "",
         "JumpForce": 301.99338,
         "MaxAirWishSpeed": 30,
         "MaxSpeed": 1000,
@@ -43,6 +46,7 @@
         "StaminaJumpCost": 0.08,
         "StaminaLandingCost": 0.05,
         "StaminaRecoveryRate": 60,
+        "StandingHeight": 72,
         "StopSpeed": 80,
         "Weight": 1
       }

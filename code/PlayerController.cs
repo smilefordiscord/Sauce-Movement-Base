@@ -2,12 +2,17 @@ using System;
 using Sandbox;
 using Sandbox.Citizen;
 
+[Title("CS2 Character Controller")]
+[Category("Physics")]
+[Icon("directions_walk")]
+[EditorHandle("materials/gizmo/charactercontroller.png")]
+
 public sealed class PlayerController : Component
 {
     [Property] public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
     
     // Movement Properties
-    [Property, Group("Movement Properties")] public float MaxSpeed {get;set;} = 285f;
+    [Property, Group("Movement Properties")] public float MaxSpeed {get;set;} = 285.98f;
     [Property, Group("Movement Properties")] public float MoveSpeed {get;set;} = 250f;
     [Property, Group("Movement Properties")] public float ShiftSpeed {get;set;} = 130f;
     [Property, Group("Movement Properties")] public float CrouchSpeed {get;set;} = 85f;
@@ -30,6 +35,7 @@ public sealed class PlayerController : Component
     [Property] public TagSet IgnoreLayers { get; set; } = new TagSet();
     [Property] public GameObject Head {get;set;}
     [Property] public GameObject Body {get;set;}
+    [Property] public BoxCollider CollisionBox {get;set;}
 
     // State Bools
     [Sync] public bool IsCrouching {get;set;} = false;
@@ -47,12 +53,14 @@ public sealed class PlayerController : Component
     private float jumpStartHeight = 0f;
     private float jumpHighestHeight = 0f;
     private bool AlreadyGrounded = true;
-
+    [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
+    
     // Size
     [Property, Group("Size")] private float Radius {get;set;} = 16;
-    [Property, Group("Size")] [Sync] private float Height {get;set;} = 72f;
-    private float StandingHeight {get;set;} = 72;
+    [Property, Group("Size")] private float StandingHeight {get;set;} = 72;
     [Property, Group("Size")] private float CroucingHeight {get;set;} = 54;
+    [Sync] private float Height {get;set;} = 72f;
+    [Sync] private float HeightGoal {get;set;} = 72f;
     private BBox BoundingBox => new BBox(new Vector3(0f - Radius, 0f - Radius, 0f), new Vector3(Radius, Radius, Height));
     private int _stuckTries;
 
@@ -64,11 +72,11 @@ public sealed class PlayerController : Component
     
     // Fucntions to make things slightly nicer
 
-    Angles GetLookAngleAsAngles() {
+    private Angles GetLookAngleAsAngles() {
         return new Angles(LookAngle.x, LookAngle.y, 0);
     }
 
-    float GetStaminaMultiplier() {
+    private float GetStaminaMultiplier() {
         return Stamina / MaxStamina;
     }
 
@@ -124,8 +132,6 @@ public sealed class PlayerController : Component
             {
                 Move(step: false);
             }
-
-            CategorizePosition();
         }
     }
 
@@ -180,7 +186,7 @@ public sealed class PlayerController : Component
         // GroundCollider = sceneTraceResult.Shape?.Collider as Collider;
         if (isOnGround && !sceneTraceResult.StartedSolid && sceneTraceResult.Fraction > 0f && sceneTraceResult.Fraction < 1f)
         {
-            base.Transform.Position = sceneTraceResult.EndPosition + sceneTraceResult.Normal * 0.01f;
+            base.Transform.Position = sceneTraceResult.EndPosition + sceneTraceResult.Normal * 0f;
         }
     }
 
@@ -207,7 +213,11 @@ public sealed class PlayerController : Component
         if ( !WishDir.IsNearZeroLength ) WishDir = WishDir.Normal;
 
         IsWalking = Input.Down("Slow");
-        IsCrouching = Input.Down("Duck");
+        // IsCrouching = Input.Down("Duck");
+        if (Input.Pressed("Duck")) {
+            IsCrouching = !IsCrouching;
+        }
+
         if (Input.Pressed("Duck") || Input.Released("Duck")) CrouchTime += 0.1f;
     }
 
@@ -220,7 +230,7 @@ public sealed class PlayerController : Component
         animationHelper.IsGrounded = IsOnGround;
         animationHelper.WithLook(Head.Transform.Rotation.Forward, 1f, 0.75f, 0.5f);
         animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
-        animationHelper.DuckLevel = 1 - (Height - 54f) / 18f;
+        animationHelper.DuckLevel = ((1 - (Height / StandingHeight)) * 3).Clamp(0, 1);
     }
 
     // Source engine magic functions
@@ -311,6 +321,7 @@ public sealed class PlayerController : Component
         if (Velocity.z < 0) Velocity = Velocity.WithZ(0);
 
         if ((AutoBunnyhopping && Input.Down("Jump")) || Input.Pressed("Jump")) {
+            animationHelper.TriggerJump();
             Punch(new Vector3(0, 0, JumpForce * GetStaminaMultiplier()));
             Stamina -= Stamina * StaminaJumpCost * 2.9625f;
             Stamina = (Stamina * 10).FloorToInt() * 0.1f;
@@ -340,16 +351,26 @@ public sealed class PlayerController : Component
 			return;
             
 		Camera = Scene.Camera.Components.Get<CameraComponent>();
-
-        StandingHeight = Height;
+        
+        Height = StandingHeight;
+        HeightGoal = StandingHeight;
     }
 
     protected override void OnFixedUpdate() {
+        if (CollisionBox.Scale != LastSize) {
+            CollisionBox.Scale = LastSize;
+            CollisionBox.Center = new Vector3(0, 0, LastSize.z / 2);
+        }
+
+        CollisionBox.Enabled = true;
+        
 		if ( IsProxy )
 			return;
         
+        CollisionBox.Enabled = false;
+
         GatherInput();
-        
+
         InternalMoveSpeed = MoveSpeed;
         if (IsWalking) InternalMoveSpeed = ShiftSpeed;
         if (IsCrouching) InternalMoveSpeed = CrouchSpeed;
@@ -357,11 +378,18 @@ public sealed class PlayerController : Component
         InternalMoveSpeed *= Weight;
 
         // Crouching
-        var HeightGoal = 72;
-        if (IsCrouching) HeightGoal = 54;
+        if (IsCrouching) {
+            HeightGoal = CroucingHeight;
+        } else {
+            HeightGoal = StandingHeight;
+            // Perform upward trace to ensure not clipping
+        }
+        
         var InitHeight = Height;
         Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
         var HeightDiff = (InitHeight - Height).Clamp(0, 10);
+        
+        LastSize = new Vector3(Radius * 2, Radius * 2, HeightGoal);
         Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
         
         Velocity += Gravity * Time.Delta * 0.5f;
@@ -396,10 +424,13 @@ public sealed class PlayerController : Component
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
         
-        if (Velocity.Length != 0 || HeightDiff > 0) {
-            GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
-            Move();
-        }
+        // if (Velocity.Length != 0 || HeightDiff > 0f) {
+        //     GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
+        //     Move();
+        // }
+        if (HeightDiff > 0f) GameObject.Transform.Position += new Vector3(0, 0, HeightDiff * 0.5f);
+        Move();
+        CategorizePosition();
         
         Velocity += Gravity * Time.Delta * 0.5f;
         
@@ -408,7 +439,7 @@ public sealed class PlayerController : Component
 
         if (jumpHighestHeight < GameObject.Transform.Position.z) jumpHighestHeight = GameObject.Transform.Position.z;
     }
-
+    
 	protected override void OnUpdate() {
         UpdateCitizenAnims();
         

@@ -4,12 +4,11 @@
     {
       "Id": "2889792b-9d73-4b52-8306-eaaf9566e526",
       "Name": "Map",
-      "Networked": true,
       "Enabled": true,
       "Components": [
         {
           "__type": "MapInstance",
-          "MapName": "xaimmap.xaim_map",
+          "MapName": "sog.de_dust2ov_d",
           "OnMapLoaded": null,
           "OnMapUnloaded": null,
           "UseMapFromLaunch": false
@@ -48,8 +47,7 @@
     {
       "Id": "0efa71d6-d722-499e-aa96-fdc854b0b47c",
       "Name": "SpawnPoint",
-      "Position": "160,-224,64",
-      "Rotation": "0,0,1,-0.00000004371139",
+      "Position": "-1478.6,-402.9698,128",
       "Enabled": true
     },
     {
@@ -92,6 +90,7 @@
       "Name": "crate01",
       "Position": "-1258.095,-549.7355,128.23",
       "Tags": "pickupable",
+      "Networked": true,
       "Enabled": true,
       "Components": [
         {
@@ -129,6 +128,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-22T09:18:08.1826688-09:00",
+  "LastSaved": "2024-02-22T16:00:15.316887-09:00",
   "__references": []
 }
