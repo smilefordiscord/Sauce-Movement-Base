@@ -43,7 +43,6 @@ public sealed class PlayerController : Component
     [Property, Title("Speed Multiplier"), Description("Useful for weapons that slow you down.")] public float Weight {get;set;} =  1f;
     [Property, Description("Add 'player' tag to disable collisions with other players.")] public TagSet IgnoreLayers { get; set; } = new TagSet();
     [Property] public GameObject Head {get;set;}
-    [Property] public GameObject Body {get;set;}
     [Property] public BoxCollider CollisionBox {get;set;}
 
     // State Bools
@@ -347,7 +346,7 @@ public sealed class PlayerController : Component
 	protected override void OnAwake() {
         Scene.FixedUpdateFrequency = 64;
 
-        BodyRenderer = Body.Components.Get<ModelRenderer>();
+        BodyRenderer = GameObject.Components.Get<ModelRenderer>();
         animationHelper = Components.GetInChildrenOrSelf<CitizenAnimationHelper>();
 
 		if ( IsProxy )
@@ -450,7 +449,7 @@ public sealed class PlayerController : Component
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.On;
 
         var Rotation = GetLookAngleAsAngles();
-		Body.Transform.Rotation = Rotation.WithPitch(0).ToRotation();
+		GameObject.Transform.Rotation = Rotation.WithPitch(0).ToRotation();
 
         Rotation = GetLookAngleAsAngles().ToRotation();
 		Head.Transform.Rotation = Rotation;

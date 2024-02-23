@@ -19,10 +19,6 @@
         "Acceleration": 5.5,
         "AirAcceleration": 150,
         "AutoBunnyhopping": true,
-        "Body": {
-          "_type": "gameobject",
-          "go": "2ecf5b46-3797-4ee4-b600-1655e7eae0e9"
-        },
         "CollisionBox": {
           "_type": "component",
           "go": "54952f9c-598d-42c4-9e20-f228756fa968",
@@ -53,6 +49,37 @@
         "UseCustomFOV": true,
         "UseCustomGravity": true,
         "Weight": 1
+      },
+      {
+        "__type": "SkinnedModelRenderer",
+        "AnimationGraph": null,
+        "BodyGroups": 341,
+        "BoneMergeTarget": null,
+        "CreateBoneObjects": false,
+        "MaterialGroup": null,
+        "MaterialOverride": null,
+        "Model": "models/citizen/citizen.vmdl",
+        "RenderType": "On",
+        "Tint": "1,1,1,1"
+      },
+      {
+        "__type": "CitizenAnimationHelper",
+        "BodyWeight": 1,
+        "EyeSource": null,
+        "EyesWeight": 1,
+        "HeadWeight": 1,
+        "Height": 1,
+        "IkLeftFoot": null,
+        "IkLeftHand": null,
+        "IkRightFoot": null,
+        "IkRightHand": null,
+        "LookAt": null,
+        "LookAtEnabled": false,
+        "Target": {
+          "_type": "component",
+          "go": "54952f9c-598d-42c4-9e20-f228756fa968",
+          "component_type": "SkinnedModelRenderer"
+        }
       }
     ],
     "Children": [
@@ -61,44 +88,6 @@
         "Name": "Head",
         "Position": "0,0,64",
         "Enabled": true
-      },
-      {
-        "Id": "2ecf5b46-3797-4ee4-b600-1655e7eae0e9",
-        "Name": "Body",
-        "Enabled": true,
-        "Components": [
-          {
-            "__type": "SkinnedModelRenderer",
-            "AnimationGraph": null,
-            "BodyGroups": 341,
-            "BoneMergeTarget": null,
-            "CreateBoneObjects": false,
-            "MaterialGroup": null,
-            "MaterialOverride": null,
-            "Model": "models/citizen/citizen.vmdl",
-            "RenderType": "On",
-            "Tint": "1,1,1,1"
-          },
-          {
-            "__type": "CitizenAnimationHelper",
-            "BodyWeight": 1,
-            "EyeSource": null,
-            "EyesWeight": 1,
-            "HeadWeight": 1,
-            "Height": 1,
-            "IkLeftFoot": null,
-            "IkLeftHand": null,
-            "IkRightFoot": null,
-            "IkRightHand": null,
-            "LookAt": null,
-            "LookAtEnabled": false,
-            "Target": {
-              "_type": "component",
-              "go": "2ecf5b46-3797-4ee4-b600-1655e7eae0e9",
-              "component_type": "SkinnedModelRenderer"
-            }
-          }
-        ]
       }
     ]
   },
