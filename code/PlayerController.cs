@@ -2,7 +2,7 @@ using System;
 using Sandbox;
 using Sandbox.Citizen;
 
-[Title("CS2 Character Controller")]
+[Title("Sauce Character Controller")]
 [Category("Physics")]
 [Icon("directions_walk")]
 [EditorHandle("materials/gizmo/charactercontroller.png")]
@@ -206,7 +206,7 @@ public sealed class PlayerController : Component
         BBox hull = BoundingBox;
         return source.Size(in hull).WithoutTags(IgnoreLayers).IgnoreGameObjectHierarchy(base.GameObject);
     }
-    
+
     private void GatherInput() {
         WishDir = 0;
 
