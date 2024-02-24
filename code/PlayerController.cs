@@ -397,7 +397,6 @@ public sealed class PlayerController : Component
         Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
         
         LastSize = new Vector3(Radius * 2, Radius * 2, HeightGoal);
-        // Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
         
         Velocity += Gravity * Time.Delta * 0.5f;
         
