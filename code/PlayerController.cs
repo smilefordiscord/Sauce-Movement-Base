@@ -453,7 +453,7 @@ public sealed class PlayerController : Component
         LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y) * Preferences.Sensitivity * 0.022f, -(Input.MouseDelta.x + ControllerInput.x) * Preferences.Sensitivity * 0.022f);
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
-		Camera.Transform.Position = GameObject.Transform.Position + new Vector3(0, 0, Height * 0.89f);
+		Camera.Transform.Position = GameObject.Transform.Position + new Vector3(0, 0, Height * 0.89f * GameObject.Transform.Scale.z);
 		Camera.Transform.Rotation = LookAngleAngles.ToRotation();
 
         if (UseCustomFOV) {
