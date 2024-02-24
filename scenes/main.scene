@@ -88,7 +88,7 @@
     {
       "Id": "83e983de-d3ed-4348-a96d-d8966203ec30",
       "Name": "crate01",
-      "Position": "-1258.095,-549.7355,128.23",
+      "Position": "-1258.095,-571.6647,128.23",
       "Tags": "pickupable",
       "Networked": true,
       "Enabled": true,
@@ -101,6 +101,56 @@
           "OnPropBreak": null,
           "OnPropTakeDamage": null,
           "ShowCreatedComponents": false
+        }
+      ]
+    },
+    {
+      "Id": "2c0f6cf9-194a-4b15-b364-3642e29dc4ab",
+      "Name": "Cube",
+      "Position": "-1198.279,-514.8217,208.3561",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "ModelRenderer",
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": null,
+          "Model": "models/dev/box.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "BoxCollider",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "50,50,50",
+          "Static": false,
+          "Surface": null
+        }
+      ]
+    },
+    {
+      "Id": "11e8038b-21e4-4a09-97d4-450011c89881",
+      "Name": "Cube (1)",
+      "Position": "-1148.712,-514.8217,232.7515",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "ModelRenderer",
+          "BodyGroups": 18446744073709551615,
+          "MaterialGroup": null,
+          "MaterialOverride": null,
+          "Model": "models/dev/box.vmdl",
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "BoxCollider",
+          "Center": "0,0,0",
+          "IsTrigger": false,
+          "Scale": "50,50,50",
+          "Static": false,
+          "Surface": null
         }
       ]
     }
@@ -128,6 +178,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-23T18:29:22.0184708-09:00",
+  "LastSaved": "2024-02-24T10:49:32.8908926-09:00",
   "__references": []
 }

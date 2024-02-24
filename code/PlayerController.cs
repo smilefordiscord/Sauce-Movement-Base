@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Sandbox;
 using Sandbox.Citizen;
 
@@ -70,7 +71,7 @@ public sealed class PlayerController : Component
     [Property, Group("Size"), Description("CS2 Default: 54f")] private float CroucingHeight {get;set;} = 54f;
     [Sync] private float Height {get;set;} = 72f;
     [Sync] private float HeightGoal {get;set;} = 72f;
-    private BBox BoundingBox => new BBox(new Vector3(-Radius * GameObject.Transform.Scale.x, -Radius * GameObject.Transform.Scale.y, 0f), new Vector3(Radius * GameObject.Transform.Scale.x, Radius * GameObject.Transform.Scale.y, Height * GameObject.Transform.Scale.z));
+    private BBox BoundingBox => new BBox(new Vector3(-Radius * GameObject.Transform.Scale.x, -Radius * GameObject.Transform.Scale.y, 0f), new Vector3(Radius * GameObject.Transform.Scale.x, Radius * GameObject.Transform.Scale.y, HeightGoal * GameObject.Transform.Scale.z));
     private int _stuckTries;
     
     // Synced internal vars
@@ -344,7 +345,7 @@ public sealed class PlayerController : Component
 
 		if ( IsProxy )
 			return;
-            
+        
 		Camera = Scene.Camera.Components.Get<CameraComponent>();
         
         Height = StandingHeight;
@@ -368,23 +369,32 @@ public sealed class PlayerController : Component
 
         GatherInput();
 
+        // Crouching
+        var InitHeight = HeightGoal;
+        if (IsCrouching) {
+            HeightGoal = CroucingHeight;
+        } else {
+            var startPos = GameObject.Transform.Position; //+ new Vector3(0, 0, )
+            var endPos = GameObject.Transform.Position + new Vector3(0, 0, StandingHeight);
+            var crouchTrace = Scene.Trace.Ray(startPos, endPos)
+                                        .IgnoreGameObject(GameObject)
+                                        .Size(new BBox(new Vector3(-Radius, -Radius, 0f), new Vector3(Radius, Radius, 0)))
+                                        .Run();
+            if (crouchTrace.Hit) {
+                HeightGoal = CroucingHeight;
+                IsCrouching = true;
+            } else {
+                HeightGoal = StandingHeight;
+            }
+        }
+        var HeightDiff = (InitHeight - HeightGoal).Clamp(0, 10);
+        
         InternalMoveSpeed = MoveSpeed;
         if (IsWalking) InternalMoveSpeed = ShiftSpeed;
         if (IsCrouching) InternalMoveSpeed = CrouchSpeed;
         InternalMoveSpeed *= StaminaMultiplier * Weight;
 
-        // Crouching
-        if (IsCrouching) {
-            HeightGoal = CroucingHeight;
-        } else {
-            HeightGoal = StandingHeight;
-            // TODO: Perform upward trace to ensure not clipping
-            // If clipping and not already at standing height force crouching height
-        }
-        
-        var InitHeight = Height;
         Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
-        var HeightDiff = (InitHeight - Height).Clamp(0, 10);
         
         LastSize = new Vector3(Radius * 2, Radius * 2, HeightGoal);
         // Head.Transform.LocalPosition = new Vector3(0, 0, Height * 0.89f);
