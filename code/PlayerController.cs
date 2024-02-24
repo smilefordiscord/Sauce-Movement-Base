@@ -62,6 +62,8 @@ public sealed class PlayerController : Component
     private float jumpHighestHeight = 0f;
     private bool AlreadyGrounded = true;
     [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
+    private Vector2 SmoothLookAngle = Vector2.Zero; // => localLookAngle.LerpTo(LookAngle, Time.Delta / 0.1f);
+    private Angles SmoothLookAngleAngles => new Angles(SmoothLookAngle.x, SmoothLookAngle.y, 0);
     private Angles LookAngleAngles => new Angles(LookAngle.x, LookAngle.y, 0);
     private float StaminaMultiplier => Stamina / MaxStamina;
     
@@ -223,9 +225,9 @@ public sealed class PlayerController : Component
 
         animationHelper.WithWishVelocity(WishDir * InternalMoveSpeed);
         animationHelper.WithVelocity(Velocity);
-        animationHelper.AimAngle = LookAngleAngles.ToRotation();
+        animationHelper.AimAngle = SmoothLookAngleAngles.ToRotation();
         animationHelper.IsGrounded = IsOnGround;
-        animationHelper.WithLook(LookAngleAngles.Forward, 1f, 0.75f, 0.5f);
+        animationHelper.WithLook(SmoothLookAngleAngles.Forward, 1f, 0.75f, 0.5f);
         animationHelper.MoveStyle = CitizenAnimationHelper.MoveStyles.Auto;
         animationHelper.DuckLevel = ((1 - (Height / StandingHeight)) * 3).Clamp(0, 1);
     }
@@ -446,10 +448,12 @@ public sealed class PlayerController : Component
     
 	protected override void OnUpdate() {
         UpdateCitizenAnims();
+
+        SmoothLookAngle = SmoothLookAngle.LerpTo(LookAngle, Time.Delta / 0.035f);
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.On;
 
-		Body.Transform.Rotation = LookAngleAngles.WithPitch(0).ToRotation();
+		Body.Transform.Rotation = SmoothLookAngleAngles.WithPitch(0).ToRotation();
         
 		if ( IsProxy )
 			return;

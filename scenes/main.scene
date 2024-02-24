@@ -159,7 +159,7 @@
     "FixedUpdateFrequency": 64,
     "Lerping": true,
     "MaxFixedUpdates": 5,
-    "NetworkFrequency": 64,
+    "NetworkFrequency": 32,
     "ThreadedAnimation": true,
     "TimeScale": 1,
     "UseFixedUpdate": true,
@@ -178,6 +178,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-24T10:49:32.8908926-09:00",
+  "LastSaved": "2024-02-24T12:55:44.76662-09:00",
   "__references": []
 }
