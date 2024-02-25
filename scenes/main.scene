@@ -53,7 +53,7 @@
     {
       "Id": "e0757b65-802e-415e-a527-a140268a35fa",
       "Name": "Camera",
-      "Tags": "maincamera",
+      "Tags": "maincamera,skybox",
       "Enabled": true,
       "Components": [
         {
@@ -178,6 +178,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-24T17:09:55.9503743-09:00",
+  "LastSaved": "2024-02-24T19:37:53.7708112-09:00",
   "__references": []
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Net;
 using Sandbox;
 using Sandbox.Citizen;
 
@@ -22,9 +23,9 @@ public sealed class PlayerController : Component
 
     // Movement Properties
     [Property, Group("Movement Properties"), Description("CS2 Default: 285.98f")] public float MaxSpeed {get;set;} = 285.98f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 250f")] public float MoveSpeed {get;set;} = 250f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 130f")] public float ShiftSpeed {get;set;} = 130f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 85f")] public float CrouchSpeed {get;set;} = 85f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 453f")] public float MoveSpeed {get;set;} = 453f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 235f")] public float ShiftSpeed {get;set;} = 235f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 154f")] public float CrouchSpeed {get;set;} = 154f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 80f")] public float StopSpeed {get;set;} = 80f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 5.2f")] public float Friction {get;set;} = 5.2f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 5.5f")] public float Acceleration {get;set;} = 5.5f;
@@ -61,7 +62,6 @@ public sealed class PlayerController : Component
     private float jumpStartHeight = 0f;
     private float jumpHighestHeight = 0f;
     private bool AlreadyGrounded = true;
-    [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
     private Vector2 SmoothLookAngle = Vector2.Zero; // => localLookAngle.LerpTo(LookAngle, Time.Delta / 0.1f);
     private Angles SmoothLookAngleAngles => new Angles(SmoothLookAngle.x, SmoothLookAngle.y, 0);
     private Angles LookAngleAngles => new Angles(LookAngle.x, LookAngle.y, 0);
@@ -78,6 +78,7 @@ public sealed class PlayerController : Component
     
     // Synced internal vars
     [Sync] private float InternalMoveSpeed {get;set;} = 250f;
+    [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
     [Sync] public Vector3 WishDir {get;set;} = Vector3.Zero;
     [Sync] public Vector3 Velocity {get;set;} = Vector3.Zero;
 	[Sync] public Vector2 LookAngle {get;set;}
@@ -308,7 +309,7 @@ public sealed class PlayerController : Component
     
     private void GroundMove() {
         if (AlreadyGrounded == IsOnGround) {
-            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed * 1.8135f, Acceleration); // lame magic number
+            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed, Acceleration); // lame magic number
         }
         if (Velocity.WithZ(0).Length > MaxSpeed) {
             var FixedVel = Velocity.WithZ(0).Normal * MaxSpeed;
@@ -420,7 +421,7 @@ public sealed class PlayerController : Component
             AirMove();
             Camera.Components.Get<TestUI>().Speed = Velocity.WithZ(0).Length.CeilToInt();
         }
-        
+
         AlreadyGrounded = IsOnGround;
         
         CrouchTime -= Time.Delta * 0.33f;

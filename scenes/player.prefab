@@ -1,6 +1,6 @@
 {
   "RootObject": {
-    "Id": "acc279c1-b442-40f1-b588-16fabf702bc9",
+    "Id": "c60cb040-4142-4689-bd3a-44a320a52d8b",
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
@@ -21,14 +21,14 @@
         "AutoBunnyhopping": true,
         "Body": {
           "_type": "gameobject",
-          "go": "66da66a1-1c4f-444b-b2fe-4614ea745bca"
+          "go": "ccfceb5f-2988-4a5b-ba41-314187918e06"
         },
         "CollisionBox": {
           "_type": "component",
-          "go": "acc279c1-b442-40f1-b588-16fabf702bc9",
+          "go": "c60cb040-4142-4689-bd3a-44a320a52d8b",
           "component_type": "BoxCollider"
         },
-        "CrouchSpeed": 85,
+        "CrouchSpeed": 154,
         "CroucingHeight": 54,
         "CustomFOV": 110,
         "CustomGravity": "0,0,-800",
@@ -38,9 +38,9 @@
         "MaxAirWishSpeed": 30,
         "MaxSpeed": 1000,
         "MaxStamina": 80,
-        "MoveSpeed": 250,
+        "MoveSpeed": 453,
         "Radius": 16,
-        "ShiftSpeed": 130,
+        "ShiftSpeed": 235,
         "StaminaJumpCost": 0.08,
         "StaminaLandingCost": 0.05,
         "StaminaRecoveryRate": 60,
@@ -53,7 +53,7 @@
     ],
     "Children": [
       {
-        "Id": "66da66a1-1c4f-444b-b2fe-4614ea745bca",
+        "Id": "ccfceb5f-2988-4a5b-ba41-314187918e06",
         "Name": "Body",
         "Enabled": true,
         "Components": [
@@ -84,7 +84,7 @@
             "LookAtEnabled": false,
             "Target": {
               "_type": "component",
-              "go": "66da66a1-1c4f-444b-b2fe-4614ea745bca",
+              "go": "ccfceb5f-2988-4a5b-ba41-314187918e06",
               "component_type": "SkinnedModelRenderer"
             }
           }
