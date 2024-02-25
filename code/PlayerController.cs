@@ -313,7 +313,7 @@ public sealed class PlayerController : Component
     
     private void GroundMove() {
         if (AlreadyGrounded == IsOnGround) {
-            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed, Acceleration); // lame magic number
+            Accelerate(WishDir, WishDir.Length * InternalMoveSpeed, Acceleration);
         }
         if (Velocity.WithZ(0).Length > MaxSpeed) {
             var FixedVel = Velocity.WithZ(0).Normal * MaxSpeed;
