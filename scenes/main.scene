@@ -31,20 +31,6 @@
       "Children": []
     },
     {
-      "Id": "9add79c1-f24d-4881-9b6b-eaf34e0d7a8f",
-      "Name": "2D Skybox",
-      "Position": "-53.56705,-175.0966,307.5175",
-      "Tags": "skybox",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "SkyBox2D",
-          "SkyMaterial": "materials/skybox/light_test_sky_sunny02.vmat",
-          "Tint": "1,1,1,1"
-        }
-      ]
-    },
-    {
       "Id": "0efa71d6-d722-499e-aa96-fdc854b0b47c",
       "Name": "SpawnPoint",
       "Position": "-1478.6,-402.9698,128",
@@ -178,6 +164,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-02-24T19:50:34.950982-09:00",
+  "LastSaved": "2024-02-24T20:15:43.2960289-09:00",
   "__references": []
 }
