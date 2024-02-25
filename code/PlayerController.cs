@@ -39,6 +39,12 @@ public sealed class PlayerController : Component
     [Property, Range(0f, 1f), Group("Stamina Properties"), Description("CS2 Default: 0.08f")] public float StaminaJumpCost {get;set;} =  0.08f;
     [Property, Range(0f, 1f), Group("Stamina Properties"), Description("CS2 Default: 0.05f")] public float StaminaLandingCost {get;set;} =  0.05f;
     
+    // Crouch Properties
+    [Property, Range(0f, 1f), Group("Crouch Properties")] public float MinCrouchTime {get;set;} = 0.1f;
+    [Property, Range(0f, 1f), Group("Crouch Properties")] public float MaxCrouchTime {get;set;} = 0.5f;
+    [Property, Range(0f, 2f), Group("Crouch Properties")] public float CrouchRecoveryRate {get;set;} = 0.33f;
+    [Property, Range(0f, 1f), Group("Crouch Properties")] public float CrouchCost {get;set;} = 0.1f;
+
     // Other Properties
     [Property, Title("Speed Multiplier"), Description("Useful for weapons that slow you down.")] public float Weight {get;set;} =  1f;
     [Property, Description("Add 'player' tag to disable collisions with other players.")] public TagSet IgnoreLayers { get; set; } = new TagSet();
@@ -217,7 +223,7 @@ public sealed class PlayerController : Component
             IsCrouching = Input.Down("Duck");
         }
 
-        if (Input.Pressed("Duck") || Input.Released("Duck")) CrouchTime += 0.1f;
+        if (Input.Pressed("Duck") || Input.Released("Duck")) CrouchTime += CrouchCost;
     }
 
     private void UpdateCitizenAnims() {
@@ -395,7 +401,7 @@ public sealed class PlayerController : Component
         if (IsCrouching) InternalMoveSpeed = CrouchSpeed;
         InternalMoveSpeed *= StaminaMultiplier * Weight;
 
-        Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(0.125f, 0.5f));
+        Height = Height.LerpTo(HeightGoal, Time.Delta / CrouchTime.Clamp(MinCrouchTime, MaxCrouchTime));
         
         LastSize = new Vector3(Radius * 2, Radius * 2, HeightGoal);
         
@@ -425,8 +431,8 @@ public sealed class PlayerController : Component
 
         AlreadyGrounded = IsOnGround;
         
-        CrouchTime -= Time.Delta * 0.33f;
-        CrouchTime = CrouchTime.Clamp(0f, 0.5f);
+        CrouchTime -= Time.Delta * CrouchRecoveryRate;
+        CrouchTime = CrouchTime.Clamp(0f, MaxCrouchTime);
         
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
