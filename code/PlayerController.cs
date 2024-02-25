@@ -79,13 +79,13 @@ public sealed class PlayerController : Component
     [Sync] private float HeightGoal {get;set;} = 72f;
     private BBox BoundingBox => new BBox(new Vector3(-Radius * GameObject.Transform.Scale.x, -Radius * GameObject.Transform.Scale.y, 0f), new Vector3(Radius * GameObject.Transform.Scale.x, Radius * GameObject.Transform.Scale.y, HeightGoal * GameObject.Transform.Scale.z));
     private int _stuckTries;
-    
+
     // Synced internal vars
     [Sync] private float InternalMoveSpeed {get;set;} = 250f;
     [Sync] private Vector3 LastSize {get;set;} = Vector3.Zero;
     [Sync] public Vector3 WishDir {get;set;} = Vector3.Zero;
     [Sync] public Vector3 Velocity {get;set;} = Vector3.Zero;
-	[Sync] public Vector2 LookAngle {get;set;}
+	[Sync] public Vector2 LookAngle {get;set;} = Vector2.Zero;
     
     // Fucntions to make things slightly nicer
 
