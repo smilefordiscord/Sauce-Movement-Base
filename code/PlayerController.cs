@@ -345,9 +345,6 @@ public sealed class PlayerController : Component
         BodyRenderer = Components.GetInChildrenOrSelf<ModelRenderer>();
         animationHelper = Components.GetInChildrenOrSelf<CitizenAnimationHelper>();
 
-		if ( IsProxy )
-			return;
-        
 		Camera = Scene.Camera.Components.Get<CameraComponent>();
         
         Height = StandingHeight;
@@ -357,7 +354,7 @@ public sealed class PlayerController : Component
     protected override void OnFixedUpdate() {
         if (CollisionBox.Scale != LastSize) {
             CollisionBox.Scale = LastSize;
-            CollisionBox.Center = new Vector3(0, 0, LastSize.z / 2);
+            CollisionBox.Center = new Vector3(0, 0, LastSize.z * 0.5f);
         }
         
 		if ( IsProxy )
@@ -376,11 +373,11 @@ public sealed class PlayerController : Component
         if (IsCrouching) {
             HeightGoal = CroucingHeight;
         } else {
-            var startPos = GameObject.Transform.Position; //+ new Vector3(0, 0, )
-            var endPos = GameObject.Transform.Position + new Vector3(0, 0, StandingHeight);
+            var startPos = GameObject.Transform.Position;
+            var endPos = GameObject.Transform.Position + new Vector3(0, 0, StandingHeight * GameObject.Transform.Scale.z);
             var crouchTrace = Scene.Trace.Ray(startPos, endPos)
                                         .IgnoreGameObject(GameObject)
-                                        .Size(new BBox(new Vector3(-Radius, -Radius, 0f), new Vector3(Radius, Radius, 0)))
+                                        .Size(new BBox(new Vector3(-Radius, -Radius, 0f), new Vector3(Radius * GameObject.Transform.Scale.x, Radius * GameObject.Transform.Scale.y, 0)))
                                         .Run();
             if (crouchTrace.Hit) {
                 HeightGoal = CroucingHeight;
@@ -423,12 +420,12 @@ public sealed class PlayerController : Component
             AirMove();
             Camera.Components.Get<TestUI>().Speed = Velocity.WithZ(0).Length.CeilToInt();
         }
-
+        
         AlreadyGrounded = IsOnGround;
         
         CrouchTime -= Time.Delta * 0.33f;
         CrouchTime = CrouchTime.Clamp(0f, 0.5f);
-
+        
         Stamina += StaminaRecoveryRate * Time.Delta;
         if (Stamina > MaxStamina) Stamina = MaxStamina;
         
@@ -463,7 +460,7 @@ public sealed class PlayerController : Component
         var ControllerInput = Input.GetAnalog(InputAnalog.Look);
         if (ControllerInput.Length > 1) ControllerInput = ControllerInput.Normal;
         ControllerInput *= 25;
-        LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y) * Preferences.Sensitivity * 0.022f, -(Input.MouseDelta.x + ControllerInput.x) * Preferences.Sensitivity * 0.022f);
+        LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y), -(Input.MouseDelta.x + ControllerInput.x)) * Preferences.Sensitivity * 0.022f;
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
 		Camera.Transform.Position = GameObject.Transform.Position + new Vector3(0, 0, Height * 0.89f * GameObject.Transform.Scale.z);
