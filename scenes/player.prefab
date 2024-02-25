@@ -15,7 +15,6 @@
       },
       {
         "__type": "PlayerController",
-        "ToggleCrouch": false,
         "Acceleration": 5.5,
         "AirAcceleration": 150,
         "AutoBunnyhopping": true,
@@ -50,6 +49,7 @@
         "StaminaRecoveryRate": 60,
         "StandingHeight": 72,
         "StopSpeed": 80,
+        "ToggleCrouch": false,
         "UseCustomFOV": true,
         "UseCustomGravity": true,
         "Weight": 1

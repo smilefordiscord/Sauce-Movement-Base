@@ -13,12 +13,10 @@ public sealed class PlayerController : Component
 
     [Property, ToggleGroup("UseCustomGravity", Label = "Use Custom Gravity")] private bool UseCustomGravity {get;set;} = true;
     [Property, ToggleGroup("UseCustomGravity"), Description("Does not change scene gravity, this is only for the player."), Title("Gravity")] public Vector3 CustomGravity {get;set;} = new Vector3(0, 0, -800f);
-    public Vector3 Gravity {get;set;} = new Vector3(0, 0, -800f);
+    public Vector3 Gravity = new Vector3(0, 0, -800f);
     
     [Property, ToggleGroup("UseCustomFOV", Label = "Use Custom Field Of View")] private bool UseCustomFOV {get;set;} = true;
     [Property, ToggleGroup("UseCustomFOV"), Title("Field Of View"), Range(60f, 120f)] public float CustomFOV {get;set;} = 90f;
-
-    [Property] public bool ToggleCrouch = false;
 
     // Movement Properties
     [Property, Group("Movement Properties"), Description("CS2 Default: 285.98f")] public float MaxSpeed {get;set;} = 285.98f;
@@ -40,6 +38,7 @@ public sealed class PlayerController : Component
     [Property, Range(0f, 1f), Group("Stamina Properties"), Description("CS2 Default: 0.05f")] public float StaminaLandingCost {get;set;} =  0.05f;
     
     // Crouch Properties
+    [Property, Group("Crouch Properties")] public bool ToggleCrouch {get;set;} = false;
     [Property, Range(0f, 1f), Group("Crouch Properties")] public float MinCrouchTime {get;set;} = 0.1f;
     [Property, Range(0f, 1f), Group("Crouch Properties")] public float MaxCrouchTime {get;set;} = 0.5f;
     [Property, Range(0f, 2f), Group("Crouch Properties")] public float CrouchRecoveryRate {get;set;} = 0.33f;
