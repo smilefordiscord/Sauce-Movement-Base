@@ -1,6 +1,6 @@
 {
   "RootObject": {
-    "Id": "c60cb040-4142-4689-bd3a-44a320a52d8b",
+    "Id": "d519fb22-2be0-4672-96c2-d44e9599b1c7",
     "Name": "player",
     "Tags": "player",
     "Enabled": true,
@@ -21,11 +21,11 @@
         "AutoBunnyhopping": true,
         "Body": {
           "_type": "gameobject",
-          "go": "ccfceb5f-2988-4a5b-ba41-314187918e06"
+          "go": "0d26dd25-84d3-41f2-ada2-3b9920d67f09"
         },
         "CollisionBox": {
           "_type": "component",
-          "go": "c60cb040-4142-4689-bd3a-44a320a52d8b",
+          "go": "d519fb22-2be0-4672-96c2-d44e9599b1c7",
           "component_type": "BoxCollider"
         },
         "CrouchSpeed": 154.1475,
@@ -53,7 +53,7 @@
     ],
     "Children": [
       {
-        "Id": "ccfceb5f-2988-4a5b-ba41-314187918e06",
+        "Id": "0d26dd25-84d3-41f2-ada2-3b9920d67f09",
         "Name": "Body",
         "Enabled": true,
         "Components": [
@@ -84,7 +84,7 @@
             "LookAtEnabled": false,
             "Target": {
               "_type": "component",
-              "go": "ccfceb5f-2988-4a5b-ba41-314187918e06",
+              "go": "0d26dd25-84d3-41f2-ada2-3b9920d67f09",
               "component_type": "SkinnedModelRenderer"
             }
           }

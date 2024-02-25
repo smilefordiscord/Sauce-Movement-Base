@@ -352,6 +352,8 @@ public sealed class PlayerController : Component
     }
 
     protected override void OnFixedUpdate() {
+        if (CollisionBox == null) return;
+        
         if (CollisionBox.Scale != LastSize) {
             CollisionBox.Scale = LastSize;
             CollisionBox.Center = new Vector3(0, 0, LastSize.z * 0.5f);
@@ -446,6 +448,8 @@ public sealed class PlayerController : Component
 	protected override void OnUpdate() {
         UpdateCitizenAnims();
 
+        if (Body == null || Camera == null || BodyRenderer == null) return;
+        
         SmoothLookAngle = SmoothLookAngle.LerpTo(LookAngle, Time.Delta / 0.035f);
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.On;
