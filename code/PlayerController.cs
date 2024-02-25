@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Net;
 using Sandbox;
 using Sandbox.Citizen;
 
@@ -23,9 +22,9 @@ public sealed class PlayerController : Component
 
     // Movement Properties
     [Property, Group("Movement Properties"), Description("CS2 Default: 285.98f")] public float MaxSpeed {get;set;} = 285.98f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 453f")] public float MoveSpeed {get;set;} = 453f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 235f")] public float ShiftSpeed {get;set;} = 235f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 154f")] public float CrouchSpeed {get;set;} = 154f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 250f")] public float MoveSpeed {get;set;} = 453.375f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 130f")] public float ShiftSpeed {get;set;} = 235.755f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 85f")] public float CrouchSpeed {get;set;} = 154.1475f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 80f")] public float StopSpeed {get;set;} = 80f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 5.2f")] public float Friction {get;set;} = 5.2f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 5.5f")] public float Acceleration {get;set;} = 5.5f;
