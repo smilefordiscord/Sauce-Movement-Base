@@ -278,7 +278,7 @@ public sealed class PlayerController : Component
     private void Accelerate(Vector3 wishDir, float wishSpeed, float accel) {
         float addspeed, accelspeed, currentspeed;
         
-        currentspeed = Velocity.WithZ(0).Dot(wishDir);
+        currentspeed = Velocity.Dot(wishDir);
         addspeed = wishSpeed - currentspeed;
     
         if (addspeed <= 0) return;
@@ -290,27 +290,6 @@ public sealed class PlayerController : Component
         Velocity += wishDir * accelspeed;
     }
 
-    private void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
-        float addspeed, accelspeed, currentspeed, wshspd;
-
-        wshspd = wishSpeed;
-
-        // Cap Speed 
-        if (wshspd > MaxAirWishSpeed)
-            wshspd = MaxAirWishSpeed;
-
-        currentspeed = Velocity.WithZ(0).Dot(wishDir);
-        addspeed = wshspd - currentspeed;
-
-        if (addspeed <= 0) return;
-
-        accelspeed = accel * wishSpeed * Time.Delta;
-
-        if (accelspeed > addspeed) accelspeed = addspeed;
-
-        Velocity += wishDir * accelspeed;
-    }
-    
     private void GroundMove() {
         if (AlreadyGrounded == IsOnGround) {
             Accelerate(WishDir, WishDir.Length * InternalMoveSpeed, Acceleration);
@@ -333,9 +312,9 @@ public sealed class PlayerController : Component
     }
 
     private void AirMove() {
-        AirAccelerate(WishDir, WishDir.Length * InternalMoveSpeed, AirAcceleration);
+        Accelerate(WishDir, Math.Clamp(WishDir.Length * InternalMoveSpeed, 0, MaxAirWishSpeed), AirAcceleration);
     }
-
+    
 	// Overrides
     
     protected override void DrawGizmos() {
@@ -427,7 +406,7 @@ public sealed class PlayerController : Component
             AirMove();
             Camera.Components.Get<TestUI>().Speed = Velocity.WithZ(0).Length.CeilToInt();
         }
-
+        
         AlreadyGrounded = IsOnGround;
         
         CrouchTime -= Time.Delta * CrouchRecoveryRate;
@@ -466,10 +445,11 @@ public sealed class PlayerController : Component
         
 		BodyRenderer.RenderType = ModelRenderer.ShadowRenderType.ShadowsOnly;
         
-        var ControllerInput = Input.GetAnalog(InputAnalog.Look);
-        if (ControllerInput.Length > 1) ControllerInput = ControllerInput.Normal;
-        ControllerInput *= 25;
-        LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y), -(Input.MouseDelta.x + ControllerInput.x)) * Preferences.Sensitivity * 0.022f;
+        // var ControllerInput = Input.GetAnalog(InputAnalog.Look);
+        // if (ControllerInput.Length > 1) ControllerInput = ControllerInput.Normal;
+        // ControllerInput *= 25;
+        // LookAngle += new Vector2((Input.MouseDelta.y - ControllerInput.y), -(Input.MouseDelta.x + ControllerInput.x)) * Preferences.Sensitivity * 0.022f;
+        LookAngle += new Vector2((Input.MouseDelta.y), -(Input.MouseDelta.x)) * Preferences.Sensitivity * 0.022f;
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
 		Camera.Transform.Position = GameObject.Transform.Position + new Vector3(0, 0, Height * 0.89f * GameObject.Transform.Scale.z);
