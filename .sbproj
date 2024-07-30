@@ -4,7 +4,7 @@
   "Org": "smile",
   "Ident": "cs2movement",
   "Schema": 1,
-  "IncludeSourceFiles": false,
+  "IncludeSourceFiles": true,
   "Resources": "",
   "PackageReferences": [],
   "EditorReferences": null,
