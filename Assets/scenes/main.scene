@@ -1,18 +1,19 @@
 {
-  "__guid": "ccc3bf80-8b32-4446-a7f5-805d19d81c7f",
+  "__guid": "54f0cdbb-61fe-4664-be1f-dee8c37df2b8",
   "GameObjects": [
     {
       "__guid": "2889792b-9d73-4b52-8306-eaaf9566e526",
       "Flags": 0,
       "Name": "Map",
       "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkInterpolation": true,
       "Components": [
         {
           "__type": "Sandbox.MapInstance",
           "__guid": "2fd47049-d703-4230-8e00-ef6243725c6e",
-          "MapName": "sog.de_dust2ov_d",
+          "__version": 1,
+          "EnableCollision": true,
+          "MapName": "florn.de_dust2",
+          "NoOrigin": true,
           "UseMapFromLaunch": false
         },
         {
@@ -20,27 +21,13 @@
           "__guid": "c590271f-9415-4b8a-ba2e-24db267ab96b",
           "PlayerPrefab": {
             "_type": "gameobject",
-            "prefab": "scenes/player.prefab"
+            "prefab": "scenes/player.prefab.prefab"
           },
-          "SpawnPoints": [
-            {
-              "_type": "gameobject",
-              "go": "0efa71d6-d722-499e-aa96-fdc854b0b47c"
-            }
-          ],
+          "SpawnPoints": [],
           "StartServer": true
         }
       ],
       "Children": []
-    },
-    {
-      "__guid": "0efa71d6-d722-499e-aa96-fdc854b0b47c",
-      "Flags": 0,
-      "Name": "SpawnPoint",
-      "Position": "-1478.6,-402.9698,128",
-      "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkInterpolation": true
     },
     {
       "__guid": "e0757b65-802e-415e-a527-a140268a35fa",
@@ -48,8 +35,6 @@
       "Name": "Camera",
       "Tags": "maincamera,skybox",
       "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkInterpolation": true,
       "Components": [
         {
           "__type": "Sandbox.CameraComponent",
@@ -82,80 +67,6 @@
           "Speed": 0
         }
       ]
-    },
-    {
-      "__guid": "83e983de-d3ed-4348-a96d-d8966203ec30",
-      "Flags": 0,
-      "Name": "crate01",
-      "Position": "-1258.095,-571.6647,128.23",
-      "Tags": "pickupable",
-      "Enabled": true,
-      "NetworkMode": 1,
-      "NetworkInterpolation": true,
-      "Components": [
-        {
-          "__type": "Sandbox.Prop",
-          "__guid": "6fcdb95f-819a-4905-9518-f9e0a907b996",
-          "BodyGroups": 18446744073709551615,
-          "Health": 30,
-          "IsStatic": false,
-          "Model": "models/citizen_props/crate01.vmdl"
-        }
-      ]
-    },
-    {
-      "__guid": "2c0f6cf9-194a-4b15-b364-3642e29dc4ab",
-      "Flags": 0,
-      "Name": "Cube",
-      "Position": "-1198.279,-514.8217,208.3561",
-      "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkInterpolation": true,
-      "Components": [
-        {
-          "__type": "Sandbox.ModelRenderer",
-          "__guid": "d1e12d1c-f5ca-4968-8a4e-7ec600093663",
-          "BodyGroups": 18446744073709551615,
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        },
-        {
-          "__type": "Sandbox.BoxCollider",
-          "__guid": "82f87b83-bf5e-423d-8b7b-90f70b625adf",
-          "Center": "0,0,0",
-          "IsTrigger": false,
-          "Scale": "50,50,50",
-          "Static": false
-        }
-      ]
-    },
-    {
-      "__guid": "11e8038b-21e4-4a09-97d4-450011c89881",
-      "Flags": 0,
-      "Name": "Cube (1)",
-      "Position": "-1148.712,-514.8217,232.7515",
-      "Enabled": true,
-      "NetworkMode": 2,
-      "NetworkInterpolation": true,
-      "Components": [
-        {
-          "__type": "Sandbox.ModelRenderer",
-          "__guid": "83a772ab-e717-46e1-a4f7-15425993a89b",
-          "BodyGroups": 18446744073709551615,
-          "Model": "models/dev/box.vmdl",
-          "RenderType": "On",
-          "Tint": "1,1,1,1"
-        },
-        {
-          "__type": "Sandbox.BoxCollider",
-          "__guid": "119372e7-db1b-44a4-ae3c-ccb573e94a96",
-          "Center": "0,0,0",
-          "IsTrigger": false,
-          "Scale": "50,50,50",
-          "Static": false
-        }
-      ]
     }
   ],
   "SceneProperties": {
@@ -181,7 +92,6 @@
   },
   "Title": "main",
   "Description": "",
-  "LastSaved": "2024-05-20T05:34:15.6399575-08:00",
   "ResourceVersion": 1,
   "__references": [],
   "__version": 1

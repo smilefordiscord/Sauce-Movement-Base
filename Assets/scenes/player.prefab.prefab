@@ -1,0 +1,114 @@
+{
+  "RootObject": {
+    "__guid": "d519fb22-2be0-4672-96c2-d44e9599b1c7",
+    "Flags": 0,
+    "Name": "player.prefab",
+    "Tags": "player",
+    "Enabled": true,
+    "Components": [
+      {
+        "__type": "Sandbox.BoxCollider",
+        "__guid": "056ce4fb-e997-4238-a5f6-4900aa9349b0",
+        "Center": "0,0,36",
+        "IsTrigger": false,
+        "Scale": "32,32,72",
+        "Static": false
+      },
+      {
+        "__type": "PlayerController",
+        "__guid": "bef0961b-48de-4215-a5ec-22d284c7b717",
+        "Acceleration": 5.5,
+        "AirAcceleration": 12,
+        "AutoBunnyhopping": true,
+        "Body": {
+          "_type": "gameobject",
+          "go": "0d26dd25-84d3-41f2-ada2-3b9920d67f09"
+        },
+        "CollisionBox": {
+          "_type": "component",
+          "component_id": "056ce4fb-e997-4238-a5f6-4900aa9349b0",
+          "go": "d519fb22-2be0-4672-96c2-d44e9599b1c7",
+          "component_type": "BoxCollider"
+        },
+        "CrouchCost": 0.1,
+        "CrouchRecoveryRate": 0.33,
+        "CrouchSpeed": 85,
+        "CroucingHeight": 54,
+        "CustomFOV": 105,
+        "CustomGravity": "0,0,-800",
+        "Friction": 5.2,
+        "IgnoreLayers": "player",
+        "JumpForce": 301.99338,
+        "MaxAirWishSpeed": 30,
+        "MaxCrouchTime": 0.5,
+        "MaxSpeed": 286,
+        "MaxStamina": 80,
+        "MinCrouchTime": 0.1,
+        "MoveSpeed": 250,
+        "Radius": 16,
+        "ShiftSpeed": 130,
+        "StaminaJumpCost": 0.08,
+        "StaminaLandingCost": 0.05,
+        "StaminaRecoveryRate": 60,
+        "StandingHeight": 72,
+        "StopSpeed": 80,
+        "ToggleCrouch": false,
+        "UseCustomFOV": true,
+        "UseCustomGravity": true,
+        "Weight": 1
+      }
+    ],
+    "Children": [
+      {
+        "__guid": "0d26dd25-84d3-41f2-ada2-3b9920d67f09",
+        "Flags": 0,
+        "Name": "Body",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__guid": "307895c2-0bcb-4287-984f-bdfe854103e1",
+            "BodyGroups": 341,
+            "CreateBoneObjects": false,
+            "Model": "models/citizen/citizen.vmdl",
+            "RenderType": "On",
+            "Tint": "1,1,1,1",
+            "UseAnimGraph": true
+          },
+          {
+            "__type": "Sandbox.Citizen.CitizenAnimationHelper",
+            "__guid": "d026c370-3961-4eb2-b9c1-c7450a21c5e8",
+            "BodyWeight": 1,
+            "EyesWeight": 1,
+            "HeadWeight": 1,
+            "Height": 1,
+            "LookAtEnabled": false,
+            "Target": {
+              "_type": "component",
+              "component_id": "307895c2-0bcb-4287-984f-bdfe854103e1",
+              "go": "0d26dd25-84d3-41f2-ada2-3b9920d67f09",
+              "component_type": "SkinnedModelRenderer"
+            }
+          },
+          {
+            "__type": "Footsteps",
+            "__guid": "e2c1cd4c-6edd-4af1-b857-e8f3786b8e03",
+            "Source": {
+              "_type": "component",
+              "component_id": "307895c2-0bcb-4287-984f-bdfe854103e1",
+              "go": "0d26dd25-84d3-41f2-ada2-3b9920d67f09",
+              "component_type": "SkinnedModelRenderer"
+            }
+          }
+        ]
+      }
+    ],
+    "__variables": []
+  },
+  "ShowInMenu": true,
+  "MenuPath": null,
+  "MenuIcon": null,
+  "ResourceVersion": 1,
+  "__references": [],
+  "__version": 1
+}

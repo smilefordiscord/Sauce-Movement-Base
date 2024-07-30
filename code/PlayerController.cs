@@ -271,8 +271,6 @@ public sealed class PlayerController : Component
             newspeed /= speed; // Determine proportion of old speed we are using.
             Velocity *= newspeed; // Adjust velocity according to proportion.
         }
-
-        Velocity -= (1 - newspeed) * Velocity.WithZ(0);
     }
 
     private void Accelerate(Vector3 wishDir, float wishSpeed, float accel) {
