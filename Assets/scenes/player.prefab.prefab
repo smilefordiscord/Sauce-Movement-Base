@@ -34,7 +34,7 @@
         "CrouchRecoveryRate": 0.33,
         "CrouchSpeed": 85,
         "CroucingHeight": 54,
-        "CustomFOV": 105,
+        "CustomFOV": 90,
         "CustomGravity": "0,0,-800",
         "Friction": 5.2,
         "IgnoreLayers": "player",
