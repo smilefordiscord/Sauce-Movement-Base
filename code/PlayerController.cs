@@ -288,6 +288,25 @@ public sealed class PlayerController : Component
         Velocity += wishDir * accelspeed;
     }
 
+    private void AirAccelerate(Vector3 wishDir, float wishSpeed, float accel) {
+        float addspeed, accelspeed, currentspeed;
+        
+        float wishspd = wishSpeed;
+
+        if (wishspd > MaxAirWishSpeed) wishspd = MaxAirWishSpeed;
+
+        currentspeed = Velocity.Dot(wishDir);
+        addspeed = wishspd - currentspeed;
+    
+        if (addspeed <= 0) return;
+        
+        accelspeed = accel * wishSpeed * Time.Delta;
+        
+        if (accelspeed > addspeed) accelspeed = addspeed;
+        
+        Velocity += wishDir * accelspeed;
+    }
+
     private void GroundMove() {
         if (AlreadyGrounded == IsOnGround) {
             Accelerate(WishDir, WishDir.Length * InternalMoveSpeed, Acceleration);
@@ -310,7 +329,7 @@ public sealed class PlayerController : Component
     }
 
     private void AirMove() {
-        Accelerate(WishDir, Math.Clamp(WishDir.Length * InternalMoveSpeed, 0, MaxAirWishSpeed), AirAcceleration);
+        AirAccelerate(WishDir, InternalMoveSpeed * Weight, AirAcceleration);
     }
     
 	// Overrides
