@@ -87,6 +87,10 @@ public sealed class PlayerController : Component
     [Sync] public Vector3 Velocity {get;set;} = Vector3.Zero;
 	[Sync] public Vector2 LookAngle {get;set;} = Vector2.Zero;
     
+    // Dynamic Camera Vars
+    [Property] bool CameraRollEnabled {get;set;} = false;
+    float sidetiltLerp = 0f;
+
     // Fucntions to make things slightly nicer
 
     public void Punch(in Vector3 amount) {
@@ -469,8 +473,15 @@ public sealed class PlayerController : Component
         LookAngle += new Vector2((Input.MouseDelta.y), -(Input.MouseDelta.x)) * Preferences.Sensitivity * 0.022f;
         LookAngle = LookAngle.WithX(LookAngle.x.Clamp(-89f, 89f));
 		
+        var angles = LookAngleAngles;
+
+        if (CameraRollEnabled) {
+            sidetiltLerp = sidetiltLerp.LerpTo(Velocity.Cross(angles.Forward).z * 0.015f * (Velocity.WithZ(0).Length / 250), Time.Delta / 0.2f).Clamp(-30f, 30f);
+            angles = angles + new Angles(0, 0, sidetiltLerp);
+        }
+
 		Camera.Transform.Position = GameObject.Transform.Position + new Vector3(0, 0, Height * 0.89f * GameObject.Transform.Scale.z);
-		Camera.Transform.Rotation = LookAngleAngles.ToRotation();
+		Camera.Transform.Rotation = angles.ToRotation();
 
         if (UseCustomFOV) {
             Camera.FieldOfView = CustomFOV;
