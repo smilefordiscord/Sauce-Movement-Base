@@ -23,7 +23,12 @@
             "_type": "gameobject",
             "prefab": "scenes/player.prefab.prefab"
           },
-          "SpawnPoints": [],
+          "SpawnPoints": [
+            {
+              "_type": "gameobject",
+              "go": "2fc26cb8-9044-4674-ae75-013769e5f599"
+            }
+          ],
           "StartServer": true
         }
       ],
@@ -67,6 +72,13 @@
           "Speed": 0
         }
       ]
+    },
+    {
+      "__guid": "2fc26cb8-9044-4674-ae75-013769e5f599",
+      "Flags": 0,
+      "Name": "SpawnPoint",
+      "Position": "-1517.696,-487.3402,498.8713",
+      "Enabled": true
     }
   ],
   "SceneProperties": {
