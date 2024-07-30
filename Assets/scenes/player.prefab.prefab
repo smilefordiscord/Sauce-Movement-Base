@@ -24,7 +24,10 @@
           "_type": "gameobject",
           "go": "0d26dd25-84d3-41f2-ada2-3b9920d67f09"
         },
+        "CameraRollAngleLimit": 30,
+        "CameraRollDamping": 0.015,
         "CameraRollEnabled": true,
+        "CameraRollSmoothing": 0.2,
         "CollisionBox": {
           "_type": "component",
           "component_id": "056ce4fb-e997-4238-a5f6-4900aa9349b0",

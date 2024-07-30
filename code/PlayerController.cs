@@ -20,9 +20,9 @@ public sealed class PlayerController : Component
 
     // Movement Properties
     [Property, Group("Movement Properties"), Description("CS2 Default: 285.98f")] public float MaxSpeed {get;set;} = 285.98f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 250f")] public float MoveSpeed {get;set;} = 453.375f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 130f")] public float ShiftSpeed {get;set;} = 235.755f;
-    [Property, Group("Movement Properties"), Description("CS2 Default: 85f")] public float CrouchSpeed {get;set;} = 154.1475f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 250f")] public float MoveSpeed {get;set;} = 250f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 130f")] public float ShiftSpeed {get;set;} = 130f;
+    [Property, Group("Movement Properties"), Description("CS2 Default: 85f")] public float CrouchSpeed {get;set;} = 85f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 80f")] public float StopSpeed {get;set;} = 80f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 5.2f")] public float Friction {get;set;} = 5.2f;
     [Property, Group("Movement Properties"), Description("CS2 Default: 5.5f")] public float Acceleration {get;set;} = 5.5f;
@@ -88,7 +88,10 @@ public sealed class PlayerController : Component
 	[Sync] public Vector2 LookAngle {get;set;} = Vector2.Zero;
     
     // Dynamic Camera Vars
-    [Property] bool CameraRollEnabled {get;set;} = false;
+    [Property, ToggleGroup("CameraRollEnabled", Label = "Camera Roll")] bool CameraRollEnabled {get;set;} = false;
+    [Property, ToggleGroup("CameraRollEnabled")] float CameraRollDamping {get;set;} = 0.015f;
+    [Property, ToggleGroup("CameraRollEnabled")] float CameraRollSmoothing {get;set;} = 0.2f;
+    [Property, ToggleGroup("CameraRollEnabled")] float CameraRollAngleLimit {get;set;} = 30f;
     float sidetiltLerp = 0f;
 
     // Fucntions to make things slightly nicer
@@ -476,7 +479,7 @@ public sealed class PlayerController : Component
         var angles = LookAngleAngles;
 
         if (CameraRollEnabled) {
-            sidetiltLerp = sidetiltLerp.LerpTo(Velocity.Cross(angles.Forward).z * 0.015f * (Velocity.WithZ(0).Length / 250), Time.Delta / 0.2f).Clamp(-30f, 30f);
+            sidetiltLerp = sidetiltLerp.LerpTo(Velocity.Cross(angles.Forward).z * CameraRollDamping * (Velocity.WithZ(0).Length / MoveSpeed), Time.Delta / CameraRollSmoothing).Clamp(-CameraRollAngleLimit, CameraRollAngleLimit);
             angles = angles + new Angles(0, 0, sidetiltLerp);
         }
 
